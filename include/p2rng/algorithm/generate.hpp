@@ -138,10 +138,10 @@ __global__ void block_splitting
 ,   GeneratorT g
 )
 {   auto idx{blockIdx.x * blockDim.x + threadIdx.x};
-    if (idx < n)
-    {   g.discard(idx);
-        out[idx] = g();
-    }
+    auto stride{blockDim.x * gridDim.x};
+    g.discard(idx);
+    for (auto i{idx}; i < n; i += stride, g.discard(stride - 1))
+        out[i] = g();
 }
 
 } // end kernel namespace
@@ -171,9 +171,12 @@ inline OutputIt generate_n
 ,   Size n
 ,   Generator g
 )
-{   const Size threads_per_block{256};
-    Size blocks_per_grid{n / threads_per_block + 1}; 
-    p2rng::cuda::kernel::block_splitting<<<blocks_per_grid, threads_per_block>>>
+{   const Size block_size{512};
+    int sm_count;
+    cudaDeviceGetAttribute(&sm_count, cudaDevAttrMultiProcessorCount, 0);
+    // Size number_of_blocks{(n + block_size - 1) / block_size}; 
+    // p2rng::cuda::kernel::block_splitting<<<number_of_blocks, block_size>>>
+    p2rng::cuda::kernel::block_splitting<<<sm_count, block_size>>>
     (   thrust::raw_pointer_cast(&out[0])
     ,   n
     ,   g
