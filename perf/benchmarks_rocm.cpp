@@ -65,9 +65,12 @@ int main(int argc, char** argv)
     hipDeviceProp_t prop;
     hipGetDeviceProperties(&prop, 0);
     std::stringstream os;
+    std::stringstream os;
     os << "\n  " << prop.name
-       << "\n  L2 Cache: " << prop.l2CacheSize / 1024 << " KiB"
-       << "\n  Number of SMs: x" << prop.multiProcessorCount
+       << "\n  (" << prop.multiProcessorCount << " X " << prop.clockRate / 1e6
+                  << " MHz SM s)"
+       << "\n  L2 Cache: " << prop.l2CacheSize / 1024 << " KiB (x"
+                           << prop.multiProcessorCount << ")"
        << "\n  Peak Memory Bandwidth: "
        << std::fixed << std::setprecision(0)
        << 2.0 * prop.memoryClockRate * (prop.memoryBusWidth / 8) / 1.0e6
