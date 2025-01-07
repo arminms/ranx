@@ -1,7 +1,10 @@
+// #include <fstream>
+
 #include <catch2/catch_all.hpp>
 
 #include <thrust/host_vector.h>
 #include <thrust/device_vector.h>
+#include <thrust/universal_vector.h>
 #include <thrust/logical.h>
 #include <thrust/functional.h>
 #include <thrust/iterator/counting_iterator.h>
@@ -32,7 +35,7 @@ TEST_CASE( "Device Info - CUDA")
 TEMPLATE_TEST_CASE("generate_n() - CUDA", "[10K][pcg32]", float, double)
 {   typedef TestType T;
     const auto n{10'007};
-    std::vector<T> vr(n);
+    thrust::universal_vector<T> vr(n);
     trng::uniform_dist<T> u(10, 100);
 
     std::generate_n
@@ -51,21 +54,18 @@ TEMPLATE_TEST_CASE("generate_n() - CUDA", "[10K][pcg32]", float, double)
     }
 
     SECTION("p2rng::generate_n()")
-    {   thrust::device_vector<T> dvt(n);
+    {   thrust::device_vector<T> vt(n);
         auto itr = p2rng::cuda::generate_n
-        (   std::begin(dvt)
+        (   std::begin(vt)
         ,   n
         ,   p2rng::bind(u, pcg32(seed_pi))
         );
 
-        CHECK(itr == std::end(dvt));
-
-        thrust::device_vector<T> dvr(n);
-        thrust::copy(vr.begin(), vr.end(), dvr.begin());
+        CHECK(itr == std::end(vt));
 
         CHECK( thrust::all_of
-        (   thrust::make_zip_iterator(thrust::make_tuple(dvr.begin(), dvt.begin()))
-        ,   thrust::make_zip_iterator(thrust::make_tuple(dvr.end(), dvt.end()))
+        (   thrust::make_zip_iterator(thrust::make_tuple(vr.begin(), vt.begin()))
+        ,   thrust::make_zip_iterator(thrust::make_tuple(vr.end(), vt.end()))
         ,   equal()
         ) );
     }
@@ -74,7 +74,7 @@ TEMPLATE_TEST_CASE("generate_n() - CUDA", "[10K][pcg32]", float, double)
 TEMPLATE_TEST_CASE("generate() - CUDA", "[10K][pcg32]", float, double)
 {   typedef TestType T;
     const auto n{10'007};
-    std::vector<T> vr(n);
+    thrust::universal_vector<T> vr(n);
     trng::uniform_dist<T> u(10, 100);
 
     std::generate
@@ -93,19 +93,16 @@ TEMPLATE_TEST_CASE("generate() - CUDA", "[10K][pcg32]", float, double)
     }
 
     SECTION("p2rng::generate()")
-    {   thrust::device_vector<T> dvt(n);
+    {   thrust::device_vector<T> vt(n);
         p2rng::cuda::generate
-        (   std::begin(dvt)
-        ,   std::end(dvt)
+        (   std::begin(vt)
+        ,   std::end(vt)
         ,   p2rng::bind(u, pcg32(seed_pi))
         );
 
-        thrust::device_vector<T> dvr(n);
-        thrust::copy(vr.begin(), vr.end(), dvr.begin());
-
         CHECK( thrust::all_of
-        (   thrust::make_zip_iterator(thrust::make_tuple(dvr.begin(), dvt.begin()))
-        ,   thrust::make_zip_iterator(thrust::make_tuple(dvr.end(), dvt.end()))
+        (   thrust::make_zip_iterator(thrust::make_tuple(vr.begin(), vt.begin()))
+        ,   thrust::make_zip_iterator(thrust::make_tuple(vr.end(), vt.end()))
         ,   equal()
         ) );
     }
@@ -114,7 +111,7 @@ TEMPLATE_TEST_CASE("generate() - CUDA", "[10K][pcg32]", float, double)
 TEMPLATE_TEST_CASE("uniform_int_dist - CUDA", "[10K][pcg32][dist]", int)
 {   typedef TestType T;
     const auto n{10'007};
-    std::vector<T> vr(n);
+    thrust::universal_vector<T> vr(n);
     trng::uniform_int_dist u(10, 100);
 
     std::generate_n
@@ -123,19 +120,26 @@ TEMPLATE_TEST_CASE("uniform_int_dist - CUDA", "[10K][pcg32][dist]", int)
     ,   std::bind(u, pcg32(seed_pi))
     );
 
-    thrust::device_vector<T> dvt(n);
+    // std::ofstream out("cuda_ref_int.txt");
+    // for (auto v : vr)
+    //     out << v << std::endl;
+    // out.close();
+
+    thrust::device_vector<T> vt(n);
     auto itr = p2rng::cuda::generate_n
-    (   std::begin(dvt)
+    (   std::begin(vt)
     ,   n
     ,   p2rng::bind(u, pcg32(seed_pi))
     );
 
-    thrust::device_vector<T> dvr(n);
-    thrust::copy(vr.begin(), vr.end(), dvr.begin());
+    // out.open("cuda_test_int.txt");
+    // for (auto v : vt)
+    //     out << v << std::endl;
+    // out.close();
 
     CHECK( thrust::all_of
-    (   thrust::make_zip_iterator(thrust::make_tuple(dvr.begin(), dvt.begin()))
-    ,   thrust::make_zip_iterator(thrust::make_tuple(dvr.end(), dvt.end()))
+    (   thrust::make_zip_iterator(thrust::make_tuple(vr.begin(), vt.begin()))
+    ,   thrust::make_zip_iterator(thrust::make_tuple(vr.end(), vt.end()))
     ,   equal()
     ) );
 }
