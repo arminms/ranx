@@ -64,10 +64,12 @@ int main(int argc, char** argv)
     // adding GPU context
     cudaDeviceProp prop;
     cudaGetDeviceProperties(&prop, 0);
+    prop.clockRate *= 1e3; // convert to Hz
     std::stringstream os;
     os << "\n  " << prop.name
+       << "\n  (" << prop.multiProcessorCount << " X " << prop.clockRate / 1e6
+                 << " MHz SM s)"
        << "\n  L2 Cache: " << prop.l2CacheSize / 1024 << " KiB"
-       << "\n  Number of SMs: x" << prop.multiProcessorCount
        << "\n  Peak Memory Bandwidth: "
        << std::fixed << std::setprecision(0)
        // based on https://developer.nvidia.com/blog/how-implement-performance-metrics-cuda-c
