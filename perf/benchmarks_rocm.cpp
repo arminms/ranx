@@ -65,7 +65,6 @@ int main(int argc, char** argv)
     hipDeviceProp_t prop;
     hipGetDeviceProperties(&prop, 0);
     std::stringstream os;
-    std::stringstream os;
     os << "\n  " << prop.name
        << "\n  (" << prop.multiProcessorCount << " X " << prop.clockRate / 1e6
                   << " MHz SM s)"
