@@ -64,7 +64,6 @@ int main(int argc, char** argv)
     // adding GPU context
     cudaDeviceProp prop;
     cudaGetDeviceProperties(&prop, 0);
-    prop.clockRate *= 1e3; // convert to Hz
     std::stringstream os;
     os << "\n  " << prop.name
        << "\n  (" << prop.multiProcessorCount << " X " << prop.clockRate / 1e6
