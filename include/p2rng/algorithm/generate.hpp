@@ -167,10 +167,11 @@ inline OutputIt generate_n
 (   OutputIt out
 ,   Size n
 ,   Generator g
+,   int device = 0
 )
 {   const Size block_size{256};
     int sm_count;
-    cudaDeviceGetAttribute(&sm_count, cudaDevAttrMultiProcessorCount, 0);
+    cudaDeviceGetAttribute(&sm_count, cudaDevAttrMultiProcessorCount, device);
     p2rng::kernel::leapfrogging<<<sm_count, block_size>>>
     (   thrust::raw_pointer_cast(&out[0])
     ,   n
@@ -202,9 +203,10 @@ inline void generate
 (   ForwardIt first
 ,   ForwardIt last
 ,   Generator g
+,   int device = 0
 )
 {   auto n{std::distance(first, last)};
-    p2rng::cuda::generate_n(first, n, g);
+    p2rng::cuda::generate_n(first, n, g, device);
 }
 
 } // end p2rng::cuda namespace
@@ -239,10 +241,11 @@ inline OutputIt generate_n
 (   OutputIt out
 ,   Size n
 ,   Generator g
+,   int device = 0
 )
 {   const Size block_size{256};
     int sm_count;
-    hipDeviceGetAttribute(&sm_count, hipDeviceAttributeMultiprocessorCount, 0);
+    hipDeviceGetAttribute(&sm_count, hipDeviceAttributeMultiprocessorCount, device);
     p2rng::kernel::leapfrogging<<<sm_count, block_size>>>
     (   thrust::raw_pointer_cast(&out[0])
     ,   n
@@ -274,9 +277,10 @@ inline void generate
 (   ForwardIt first
 ,   ForwardIt last
 ,   Generator g
+,   int device = 0
 )
 {   auto n{std::distance(first, last)};
-    p2rng::rocm::generate_n(first, n, g);
+    p2rng::rocm::generate_n(first, n, g, device);
 }
 
 } // end p2rng::rocm namespace
