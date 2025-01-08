@@ -3,10 +3,10 @@
 #include <thrust/host_vector.h>
 #include <thrust/device_vector.h>
 
-#include <p2rng/bind.hpp>
-#include <p2rng/pcg/pcg_random.hpp>
-#include <p2rng/trng/uniform_dist.hpp>
-#include <p2rng/algorithm/generate.hpp>
+#include <ranx/bind.hpp>
+#include <ranx/pcg/pcg_random.hpp>
+#include <ranx/trng/uniform_dist.hpp>
+#include <ranx/algorithm/generate.hpp>
 
 const unsigned long seed_pi{3141592654};
 
@@ -14,7 +14,7 @@ const unsigned long seed_pi{3141592654};
 // generate() algortithm
 
 template <class T>
-void p2rng_generate_cuda(benchmark::State& st)
+void ranx_generate_cuda(benchmark::State& st)
 {   size_t n = size_t(st.range());
     cudaEvent_t start, stop;
     cudaEventCreate(&start); cudaEventCreate(&stop);
@@ -22,10 +22,10 @@ void p2rng_generate_cuda(benchmark::State& st)
 
     for (auto _ : st)
     {   cudaEventRecord(start);
-        p2rng::cuda::generate_n
+        ranx::cuda::generate_n
         (   v.begin()
         ,   n
-        ,   p2rng::bind(trng::uniform_dist<T>(10, 100), pcg32(seed_pi))
+        ,   ranx::bind(trng::uniform_dist<T>(10, 100), pcg32(seed_pi))
         );
         cudaEventRecord(stop);
         cudaEventSynchronize(stop);
@@ -41,13 +41,13 @@ void p2rng_generate_cuda(benchmark::State& st)
     );
 }
 
-BENCHMARK_TEMPLATE(p2rng_generate_cuda, float)
+BENCHMARK_TEMPLATE(ranx_generate_cuda, float)
 ->  RangeMultiplier(2)
 ->  Range(1<<20, 1<<24)
 ->  UseManualTime()
 ->  Unit(benchmark::kMillisecond);
 
-BENCHMARK_TEMPLATE(p2rng_generate_cuda, double)
+BENCHMARK_TEMPLATE(ranx_generate_cuda, double)
 ->  RangeMultiplier(2)
 ->  Range(1<<20, 1<<24)
 ->  UseManualTime()

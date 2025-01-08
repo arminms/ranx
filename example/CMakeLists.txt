@@ -7,24 +7,24 @@ project(rand100 CXX)
 include(FetchContent)
 include(CheckLanguage)
 
-## find p2rng, if not installed fetch it...
+## find ranx, if not installed fetch it...
 #
-find_package(p2rng CONFIG
+find_package(ranx CONFIG
   COMPONENTS openmp
   OPTIONAL_COMPONENTS cuda oneapi rocm
 )
-if(NOT p2rng_FOUND)
-  message(STATUS "Fetching p2rng library...")
+if(NOT ranx_FOUND)
+  message(STATUS "Fetching ranx library...")
   FetchContent_Declare(
-    p2rng
-    GIT_REPOSITORY https://github.com/arminms/p2rng.git
+    ranx
+    GIT_REPOSITORY https://github.com/arminms/ranx.git
     GIT_TAG main
   )
-  # setting required p2rng components
-  set(P2RNG_COMPONENTS openmp cuda oneapi rocm
+  # setting required ranx components
+  set(RANX_COMPONENTS openmp cuda oneapi rocm
     CACHE STRING "Required components"
   )
-  FetchContent_MakeAvailable(p2rng)
+  FetchContent_MakeAvailable(ranx)
 endif()
 
 ## build CUDA version if it's available
@@ -33,7 +33,7 @@ check_language(CUDA)
 if(CMAKE_CUDA_COMPILER)
   enable_language(CUDA)
   add_executable(rand100_cuda rand100.cu)
-  target_link_libraries(rand100_cuda PRIVATE p2rng::cuda)
+  target_link_libraries(rand100_cuda PRIVATE ranx::cuda)
 endif()
 
 ## build ROCm version if it's available
@@ -42,7 +42,7 @@ check_language(HIP)
 if(CMAKE_HIP_COMPILER)
   enable_language(HIP)
   add_executable(rand100_rocm rand100_rocm.cpp)
-  target_link_libraries(rand100_rocm PRIVATE p2rng::rocm)
+  target_link_libraries(rand100_rocm PRIVATE ranx::rocm)
 endif()
 
 ## build oneAPI version if it's available, go with OpenMP otherwise
@@ -50,8 +50,8 @@ endif()
 find_package(IntelDPCPP CONFIG)
 if (IntelDPCPP_FOUND)
   add_executable(rand100_oneapi rand100_oneapi.cpp)
-  target_link_libraries(rand100_oneapi PRIVATE p2rng::oneapi)
+  target_link_libraries(rand100_oneapi PRIVATE ranx::oneapi)
 else() # openmp and oneapi are mutually exclusive
   add_executable(rand100_openmp rand100_openmp.cpp)
-  target_link_libraries(rand100_openmp PRIVATE p2rng::openmp)
+  target_link_libraries(rand100_openmp PRIVATE ranx::openmp)
 endif()

@@ -9,21 +9,21 @@ list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 find_package(TBB REQUIRED)
 
 include(FetchContent)
-find_package(p2rng CONFIG
+find_package(ranx CONFIG
   COMPONENTS openmp
 )
-if(NOT p2rng_FOUND)
-  message(STATUS "Fetching p2rng library...")
+if(NOT ranx_FOUND)
+  message(STATUS "Fetching ranx library...")
   FetchContent_Declare(
-    p2rng
-    GIT_REPOSITORY https://github.com/arminms/p2rng.git
+    ranx
+    GIT_REPOSITORY https://github.com/arminms/ranx.git
     GIT_TAG main
   )
-  # setting required p2rng components
-  set(P2RNG_COMPONENTS openmp
+  # setting required ranx components
+  set(RANX_COMPONENTS openmp
     CACHE STRING "Required components"
   )
-  FetchContent_MakeAvailable(p2rng)
+  FetchContent_MakeAvailable(ranx)
 endif()
 
 set(PROGS
@@ -40,5 +40,5 @@ set(PROGS
 foreach(PROG ${PROGS})
   add_executable(${PROG} ${PROG}.cpp)
   # target_compile_features(${PROG} PRIVATE cxx_std_17)
-  target_link_libraries(${PROG} PRIVATE TBB::tbb p2rng::openmp)
+  target_link_libraries(${PROG} PRIVATE TBB::tbb ranx::openmp)
 endforeach()

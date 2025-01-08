@@ -5,7 +5,7 @@
 #include <algorithm>
 #include <functional>
 #include <execution>
-#include <p2rng/pcg/pcg_random.hpp>
+#include <ranx/pcg/pcg_random.hpp>
 #include <thread>
 
 int main(int argc, char* argv[])

@@ -21,13 +21,13 @@
 #
 cmake_minimum_required(VERSION 3.21...3.26)
 
-## detect if p2rng is being bundled, disable installations in that case
+## detect if ranx is being bundled, disable installations in that case
 #
 if(NOT DEFINED PROJECT_NAME)
   set(NOT_SUBPROJECT ON)
 else()
   set(NOT_SUBPROJECT OFF)
-  set(P2RNG_COMPONENTS openmp CACHE STRING "Required components")
+  set(RANX_COMPONENTS openmp CACHE STRING "Required components")
 endif()
 
 ## Set default build type to Release if none was specified
@@ -36,13 +36,13 @@ include(cmake/BuildType.cmake)
 
 ## life is about choices...
 #
-option(P2RNG_ENABLE_TESTS "Enable the unit tests ?" ON)
-option(P2RNG_ENABLE_BENCHMARKS "Enable benchmarks ?" ON)
+option(RANX_ENABLE_TESTS "Enable the unit tests ?" ON)
+option(RANX_ENABLE_BENCHMARKS "Enable benchmarks ?" ON)
 
 ## finally our project...
 #
 project(
-  p2rng
+  ranx
   VERSION 1.0.0
   DESCRIPTION "A modern header-only C++ library for parallel algorithmic (pseudo) random number generation supporting OpenMP, CUDA, ROCm and oneAPI"
   LANGUAGES CXX
@@ -69,9 +69,9 @@ include(GNUInstallDirs)
 
 ## set target API
 #
-set(P2RNG_TARGET_API "openmp" CACHE
+set(RANX_TARGET_API "openmp" CACHE
   STRING "Choose target API ?")
-set_property(CACHE P2RNG_TARGET_API PROPERTY STRINGS
+set_property(CACHE RANX_TARGET_API PROPERTY STRINGS
   "cuda"
   "oneapi"
   "openmp"
@@ -90,7 +90,7 @@ set_property(CACHE HIP_TARGET PROPERTY STRINGS
 
 ## switch to the target API
 #
-if(${P2RNG_TARGET_API} STREQUAL cuda)
+if(${RANX_TARGET_API} STREQUAL cuda)
   check_language(CUDA)
   if(CMAKE_CUDA_COMPILER)
     enable_language(CUDA)
@@ -98,10 +98,10 @@ if(${P2RNG_TARGET_API} STREQUAL cuda)
   else()
     message(FATAL_ERROR "No CUDA support found")
   endif()
-elseif(${P2RNG_TARGET_API} STREQUAL oneapi)
+elseif(${RANX_TARGET_API} STREQUAL oneapi)
   find_package(IntelDPCPP REQUIRED)
   find_package(oneDPL REQUIRED)
-elseif(${P2RNG_TARGET_API} STREQUAL rocm)
+elseif(${RANX_TARGET_API} STREQUAL rocm)
   check_language(HIP)
   if(CMAKE_HIP_COMPILER)
     enable_language(HIP)
@@ -110,18 +110,18 @@ elseif(${P2RNG_TARGET_API} STREQUAL rocm)
   endif()
   find_package(hip REQUIRED)
   find_package(rocThrust REQUIRED)
-elseif(${P2RNG_TARGET_API} STREQUAL openmp)
+elseif(${RANX_TARGET_API} STREQUAL openmp)
   find_package(OpenMP REQUIRED)
   list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 else()
-  message(FATAL_ERROR "Wrong P2RNG_TARGET_API: ${P2RNG_TARGET_API}")
+  message(FATAL_ERROR "Wrong RANX_TARGET_API: ${RANX_TARGET_API}")
 endif()
 
 ## try to find dependency for requested components based on the
-#  P2RNG_COMPONENTS cache variable when p2rng is being bundled
+#  RANX_COMPONENTS cache variable when ranx is being bundled
 #
 if (NOT NOT_SUBPROJECT)
-  foreach(_comp ${P2RNG_COMPONENTS})
+  foreach(_comp ${RANX_COMPONENTS})
     if (${_comp} STREQUAL cuda)
       find_package(CUDAToolkit 11 QUIET)
     elseif(${_comp} STREQUAL oneapi)
@@ -133,12 +133,12 @@ if (NOT NOT_SUBPROJECT)
     elseif(${_comp} STREQUAL openmp)
       find_package(OpenMP QUIET)
     else()
-      message(FATAL_ERROR "Unsupported p2rng component: ${_comp}")
+      message(FATAL_ERROR "Unsupported ranx component: ${_comp}")
     endif()
   endforeach()
 endif()
 
-## define p2rng target
+## define ranx target
 #
 add_library(${PROJECT_NAME} INTERFACE)
 add_library(${PROJECT_NAME}::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
@@ -148,11 +148,11 @@ target_include_directories(${PROJECT_NAME} INTERFACE
   $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
 )
 set_target_properties(${PROJECT_NAME} PROPERTIES
-  VERSION ${p2rng_VERSION}
-  SOVERSION ${p2rng_VERSION_MAJOR}
+  VERSION ${ranx_VERSION}
+  SOVERSION ${ranx_VERSION_MAJOR}
 )
 
-## define p2rng::cuda target
+## define ranx::cuda target
 #
 add_library(cuda INTERFACE)
 add_library(${PROJECT_NAME}::cuda ALIAS cuda)
@@ -164,7 +164,7 @@ target_link_libraries(cuda INTERFACE
   ${PROJECT_NAME}::${PROJECT_NAME}
 )
 
-## define p2rng::oneapi target
+## define ranx::oneapi target
 #
 add_library(oneapi INTERFACE)
 add_library(${PROJECT_NAME}::oneapi ALIAS oneapi)
@@ -173,7 +173,7 @@ target_link_libraries(oneapi INTERFACE
   oneDPL
 )
 
-## define p2rng::rocm target
+## define ranx::rocm target
 #
 add_library(rocm INTERFACE)
 add_library(${PROJECT_NAME}::rocm ALIAS rocm)
@@ -183,7 +183,7 @@ target_link_libraries(rocm INTERFACE
   roc::rocthrust
 )
 
-## define p2rng::openmp target
+## define ranx::openmp target
 #
 add_library(openmp INTERFACE)
 add_library(${PROJECT_NAME}::openmp ALIAS openmp)
@@ -192,7 +192,7 @@ target_link_libraries(openmp INTERFACE
   OpenMP::OpenMP_CXX
 )
 
-## only perform the installation when p2rng is not being used as a subproject
+## only perform the installation when ranx is not being used as a subproject
 #
 if (NOT_SUBPROJECT)
   ## install the target and create export-set
@@ -202,7 +202,7 @@ if (NOT_SUBPROJECT)
     EXPORT ${PROJECT_NAME}-targets
   )
 
-  ## install p2rng header files
+  ## install ranx header files
   #
   add_subdirectory(include)
 
@@ -293,11 +293,11 @@ if (NOT_SUBPROJECT)
   #
   write_basic_package_version_file(
     "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}-config-version.cmake"
-    VERSION "${p2rng_VERSION_MAJOR}.${p2rng_VERSION_MINOR}"
+    VERSION "${ranx_VERSION_MAJOR}.${ranx_VERSION_MINOR}"
     COMPATIBILITY AnyNewerVersion
   )
 
-  ## install p2rng export config files
+  ## install ranx export config files
   #
   install(FILES
     ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}-config.cmake
@@ -314,7 +314,7 @@ if (NOT_SUBPROJECT)
 
   ## add unit tests
   #
-  if(${P2RNG_ENABLE_TESTS})
+  if(${RANX_ENABLE_TESTS})
     enable_testing()
     find_package(
       Catch2 3
@@ -336,7 +336,7 @@ if (NOT_SUBPROJECT)
 
   ## add benchmarks
   #
-  if(${P2RNG_ENABLE_BENCHMARKS})
+  if(${RANX_ENABLE_BENCHMARKS})
     find_package(benchmark
       CONFIG
       HINTS $ENV{HOME} /usr/local /opt/local /opt

@@ -14,13 +14,13 @@ GPU:
 ------------------------------------------------------------------------------------------------------
 Benchmark                                                 Time             CPU   Iterations  BW (GB/s)
 ------------------------------------------------------------------------------------------------------
-p2rng_generate_rocm<float>/1048576/manual_time        0.057 ms        0.078 ms        12358  73.7611/s
-p2rng_generate_rocm<float>/2097152/manual_time        0.097 ms        0.117 ms         7221  86.5602/s
-p2rng_generate_rocm<float>/4194304/manual_time        0.180 ms        0.197 ms         3886  93.2582/s
-p2rng_generate_rocm<float>/8388608/manual_time        0.352 ms        0.370 ms         1990  95.3958/s
-p2rng_generate_rocm<float>/16777216/manual_time       0.710 ms        0.727 ms          987  94.5727/s
-p2rng_generate_rocm<double>/1048576/manual_time       0.058 ms        0.076 ms        12129  145.378/s
-p2rng_generate_rocm<double>/2097152/manual_time       0.098 ms        0.117 ms         7122  170.609/s
-p2rng_generate_rocm<double>/4194304/manual_time       0.181 ms        0.200 ms         3876  185.695/s
-p2rng_generate_rocm<double>/8388608/manual_time       0.355 ms        0.373 ms         1973  189.193/s
-p2rng_generate_rocm<double>/16777216/manual_time      0.715 ms        0.734 ms          979  187.703/s
+ranx_generate_rocm<float>/1048576/manual_time        0.057 ms        0.078 ms        12358  73.7611/s
+ranx_generate_rocm<float>/2097152/manual_time        0.097 ms        0.117 ms         7221  86.5602/s
+ranx_generate_rocm<float>/4194304/manual_time        0.180 ms        0.197 ms         3886  93.2582/s
+ranx_generate_rocm<float>/8388608/manual_time        0.352 ms        0.370 ms         1990  95.3958/s
+ranx_generate_rocm<float>/16777216/manual_time       0.710 ms        0.727 ms          987  94.5727/s
+ranx_generate_rocm<double>/1048576/manual_time       0.058 ms        0.076 ms        12129  145.378/s
+ranx_generate_rocm<double>/2097152/manual_time       0.098 ms        0.117 ms         7122  170.609/s
+ranx_generate_rocm<double>/4194304/manual_time       0.181 ms        0.200 ms         3876  185.695/s
+ranx_generate_rocm<double>/8388608/manual_time       0.355 ms        0.373 ms         1973  189.193/s
+ranx_generate_rocm<double>/16777216/manual_time      0.715 ms        0.734 ms          979  187.703/s

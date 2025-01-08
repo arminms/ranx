@@ -7,11 +7,11 @@
 #include <thrust/iterator/counting_iterator.h>
 #include <thrust/iterator/zip_iterator.h>
 
-#include <p2rng/bind.hpp>
-#include <p2rng/pcg/pcg_random.hpp>
-#include <p2rng/trng/uniform_dist.hpp>
-#include <p2rng/trng/uniform_int_dist.hpp>
-#include <p2rng/algorithm/generate.hpp>
+#include <ranx/bind.hpp>
+#include <ranx/pcg/pcg_random.hpp>
+#include <ranx/trng/uniform_dist.hpp>
+#include <ranx/trng/uniform_int_dist.hpp>
+#include <ranx/algorithm/generate.hpp>
 
 const unsigned long seed_pi{3141592654};
 
@@ -50,12 +50,12 @@ TEMPLATE_TEST_CASE("generate_n() - ROCm", "[10K][pcg32]", float, double)
         ) );
     }
 
-    SECTION("p2rng::generate_n()")
+    SECTION("ranx::generate_n()")
     {   thrust::device_vector<T> vt(n);
-        auto itr = p2rng::rocm::generate_n
+        auto itr = ranx::rocm::generate_n
         (   std::begin(vt)
         ,   n
-        ,   p2rng::bind(u, pcg32(seed_pi))
+        ,   ranx::bind(u, pcg32(seed_pi))
         );
 
         CHECK(itr == std::end(vt));
@@ -89,12 +89,12 @@ TEMPLATE_TEST_CASE("generate() - ROCm", "[10K][pcg32]", float, double)
         ) );
     }
 
-    SECTION("p2rng::generate()")
+    SECTION("ranx::generate()")
     {   thrust::device_vector<T> vt(n);
-        p2rng::rocm::generate
+        ranx::rocm::generate
         (   std::begin(vt)
         ,   std::end(vt)
-        ,   p2rng::bind(u, pcg32(seed_pi))
+        ,   ranx::bind(u, pcg32(seed_pi))
         );
 
         CHECK( thrust::all_of
@@ -118,10 +118,10 @@ TEMPLATE_TEST_CASE("uniform_int_dist - ROCm", "[10K][pcg32][dist]", int)
     );
 
     thrust::device_vector<T> vt(n);
-    auto itr = p2rng::rocm::generate_n
+    auto itr = ranx::rocm::generate_n
     (   std::begin(vt)
     ,   n
-    ,   p2rng::bind(u, pcg32(seed_pi))
+    ,   ranx::bind(u, pcg32(seed_pi))
     );
 
     CHECK( thrust::all_of

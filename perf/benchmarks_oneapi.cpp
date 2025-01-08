@@ -3,10 +3,10 @@
 
 #include <benchmark/benchmark.h>
 
-#include <p2rng/bind.hpp>
-#include <p2rng/pcg/pcg_random.hpp>
-#include <p2rng/trng/uniform_dist.hpp>
-#include <p2rng/algorithm/generate.hpp>
+#include <ranx/bind.hpp>
+#include <ranx/pcg/pcg_random.hpp>
+#include <ranx/trng/uniform_dist.hpp>
+#include <ranx/algorithm/generate.hpp>
 
 const unsigned long seed_pi{3141592654};
 
@@ -14,7 +14,7 @@ const unsigned long seed_pi{3141592654};
 // generate() algorithm
 
 template <class T>
-void p2rng_generate_oneapi(benchmark::State& st)
+void ranx_generate_oneapi(benchmark::State& st)
 {   size_t n = size_t(st.range());
     // enabling SYCL queue profiling
     auto pl = sycl::property_list{sycl::property::queue::enable_profiling()};
@@ -22,10 +22,10 @@ void p2rng_generate_oneapi(benchmark::State& st)
     sycl::buffer<T> v(n);
 
     for (auto _ : st)
-    {   auto event = p2rng::oneapi::generate_n
+    {   auto event = ranx::oneapi::generate_n
         (   dpl::begin(v)
         ,   n
-        ,   p2rng::bind(trng::uniform_dist<T>(10, 100), pcg32(seed_pi))
+        ,   ranx::bind(trng::uniform_dist<T>(10, 100), pcg32(seed_pi))
         ,   q
         );
         event.wait();
@@ -42,13 +42,13 @@ void p2rng_generate_oneapi(benchmark::State& st)
     );
 }
 
-BENCHMARK_TEMPLATE(p2rng_generate_oneapi, float)
+BENCHMARK_TEMPLATE(ranx_generate_oneapi, float)
 ->  RangeMultiplier(2)
 ->  Range(1<<20, 1<<24)
 ->  UseManualTime()
 ->  Unit(benchmark::kMillisecond);
 
-BENCHMARK_TEMPLATE(p2rng_generate_oneapi, double)
+BENCHMARK_TEMPLATE(ranx_generate_oneapi, double)
 ->  RangeMultiplier(2)
 ->  Range(1<<20, 1<<24)
 ->  UseManualTime()

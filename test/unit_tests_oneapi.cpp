@@ -3,11 +3,11 @@
 
 #include <catch2/catch_all.hpp>
 
-#include <p2rng/bind.hpp>
-#include <p2rng/pcg/pcg_random.hpp>
-#include <p2rng/trng/uniform_dist.hpp>
-#include <p2rng/trng/uniform_int_dist.hpp>
-#include <p2rng/algorithm/generate.hpp>
+#include <ranx/bind.hpp>
+#include <ranx/pcg/pcg_random.hpp>
+#include <ranx/trng/uniform_dist.hpp>
+#include <ranx/trng/uniform_int_dist.hpp>
+#include <ranx/algorithm/generate.hpp>
 
 const unsigned long seed_pi{3141592654};
 
@@ -44,12 +44,12 @@ TEMPLATE_TEST_CASE( "generate_n() - oneAPI", "[10K][pcg32]", float, double )
         ) );
     }
 
-    SECTION("p2rng::generate()")
+    SECTION("ranx::generate()")
     {   sycl::buffer<T> dvt{sycl::range(n)};
-        p2rng::oneapi::generate_n
+        ranx::oneapi::generate_n
         (   dpl::begin(dvt)
         ,   n
-        ,   p2rng::bind(u, pcg32(seed_pi))
+        ,   ranx::bind(u, pcg32(seed_pi))
         ,   q
         ).wait();
 
@@ -86,12 +86,12 @@ TEMPLATE_TEST_CASE( "generate() - oneAPI", "[10K][pcg32]", float, double )
         ) );
     }
 
-    SECTION("p2rng::generate()")
+    SECTION("ranx::generate()")
     {   sycl::buffer<T> dvt{sycl::range(n)};
-        p2rng::oneapi::generate
+        ranx::oneapi::generate
         (   dpl::begin(dvt)
         ,   dpl::end(dvt)
-        ,   p2rng::bind(u, pcg32(seed_pi))
+        ,   ranx::bind(u, pcg32(seed_pi))
         ,   q
         ).wait();
 
@@ -120,10 +120,10 @@ TEMPLATE_TEST_CASE( "uniform_int_dist - oneAPI", "[10K][pcg32][dist]", int )
     );
 
     sycl::buffer<T> dvt{sycl::range(n)};
-    p2rng::oneapi::generate_n
+    ranx::oneapi::generate_n
     (   dpl::begin(dvt)
     ,   n
-    ,   p2rng::bind(u, pcg32(seed_pi))
+    ,   ranx::bind(u, pcg32(seed_pi))
     ,   q
     ).wait();
 

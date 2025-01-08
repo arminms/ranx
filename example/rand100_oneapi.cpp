@@ -3,7 +3,7 @@
 
 #include <oneapi/dpl/iterator>
 #include <sycl/sycl.hpp>
-#include <p2rng/p2rng.hpp>
+#include <ranx/ranx.hpp>
 
 int main(int argc, char* argv[])
 {   const unsigned long seed{2718281828};
@@ -11,10 +11,10 @@ int main(int argc, char* argv[])
     sycl::buffer<int> v{sycl::range(n)};
     sycl::queue q;
 
-    p2rng::oneapi::generate_n
+    ranx::oneapi::generate_n
     (   dpl::begin(v)
     ,   n
-    ,   p2rng::bind(trng::uniform_int_dist(10, 100), pcg32(seed))
+    ,   ranx::bind(trng::uniform_int_dist(10, 100), pcg32(seed))
     ,   q   // this is optional and can be omitted
     ).wait();
 

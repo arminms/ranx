@@ -4,10 +4,10 @@
 
 #include <benchmark/benchmark.h>
 
-#include <p2rng/bind.hpp>
-#include <p2rng/pcg/pcg_random.hpp>
-#include <p2rng/trng/uniform_dist.hpp>
-#include <p2rng/algorithm/generate.hpp>
+#include <ranx/bind.hpp>
+#include <ranx/pcg/pcg_random.hpp>
+#include <ranx/trng/uniform_dist.hpp>
+#include <ranx/algorithm/generate.hpp>
 
 const unsigned long seed_pi{3141592654};
 
@@ -43,15 +43,15 @@ BENCHMARK_TEMPLATE(stl_generate, double)
 ->  Unit(benchmark::kMillisecond);
 
 template <class T>
-void p2rng_generate_openmp(benchmark::State& st)
+void ranx_generate_openmp(benchmark::State& st)
 {   size_t n = size_t(st.range());
     std::vector<T> v(n);
 
     for (auto _ : st)
-        p2rng::generate_n
+        ranx::generate_n
         (   std::begin(v)
         ,   n
-        ,   p2rng::bind(trng::uniform_dist<T>(10, 100), pcg32(seed_pi))
+        ,   ranx::bind(trng::uniform_dist<T>(10, 100), pcg32(seed_pi))
         );
 
     st.counters["BW (GB/s)"] = benchmark::Counter
@@ -60,13 +60,13 @@ void p2rng_generate_openmp(benchmark::State& st)
     );
 }
 
-BENCHMARK_TEMPLATE(p2rng_generate_openmp, float)
+BENCHMARK_TEMPLATE(ranx_generate_openmp, float)
 ->  RangeMultiplier(2)
 ->  Range(1<<20, 1<<24)
 ->  UseRealTime()
 ->  Unit(benchmark::kMillisecond);
 
-BENCHMARK_TEMPLATE(p2rng_generate_openmp, double)
+BENCHMARK_TEMPLATE(ranx_generate_openmp, double)
 ->  RangeMultiplier(2)
 ->  Range(1<<20, 1<<24)
 ->  UseRealTime()

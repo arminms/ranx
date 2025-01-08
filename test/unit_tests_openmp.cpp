@@ -5,11 +5,11 @@
 
 #include <catch2/catch_all.hpp>
 
-#include <p2rng/bind.hpp>
-#include <p2rng/pcg/pcg_random.hpp>
-#include <p2rng/trng/uniform_dist.hpp>
-#include <p2rng/trng/uniform_int_dist.hpp>
-#include <p2rng/algorithm/generate.hpp>
+#include <ranx/bind.hpp>
+#include <ranx/pcg/pcg_random.hpp>
+#include <ranx/trng/uniform_dist.hpp>
+#include <ranx/trng/uniform_int_dist.hpp>
+#include <ranx/algorithm/generate.hpp>
 
 const unsigned long seed_pi{3141592654};
 
@@ -38,11 +38,11 @@ TEMPLATE_TEST_CASE( "generate_n() - OpenMP", "[10K][pcg32]", float, double)
         ) );
     }
 
-    SECTION("p2rng::generate_n()")
-    {   auto itr = p2rng::generate_n
+    SECTION("ranx::generate_n()")
+    {   auto itr = ranx::generate_n
         (   std::begin(vt)
         ,   n
-        ,   p2rng::bind(u, pcg32(seed_pi))
+        ,   ranx::bind(u, pcg32(seed_pi))
         );
 
         CHECK(itr == std::end(vt));
@@ -82,11 +82,11 @@ TEMPLATE_TEST_CASE( "generate() - OpenMP", "[10K][pcg32]", float, double)
         ) );
     }
 
-    SECTION("p2rng::generate()")
-    {   p2rng::generate
+    SECTION("ranx::generate()")
+    {   ranx::generate
         (   std::begin(vt)
         ,   std::end(vt)
-        ,   p2rng::bind(u, pcg32(seed_pi))
+        ,   ranx::bind(u, pcg32(seed_pi))
         );
 
         CHECK( std::all_of
@@ -113,10 +113,10 @@ TEMPLATE_TEST_CASE( "uniform_int_dist - OpenMP", "[10K][pcg32][dist]", int)
     ,   n
     ,   std::bind(u, pcg32(seed_pi))
     );
-    auto itr = p2rng::generate_n
+    auto itr = ranx::generate_n
     (   std::begin(vt)
     ,   n
-    ,   p2rng::bind(u, pcg32(seed_pi))
+    ,   ranx::bind(u, pcg32(seed_pi))
     );
     CHECK( std::all_of
     (   std::begin(idx)

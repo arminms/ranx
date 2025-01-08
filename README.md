@@ -1,22 +1,21 @@
-[![Build and Test (Linux/macOS/Windows)](https://github.com/arminms/p2rng/actions/workflows/cmake-multi-platform.yml/badge.svg)](https://github.com/arminms/p2rng/actions/workflows/cmake-multi-platform.yml)
+[![Build and Test (Linux/macOS/Windows)](https://github.com/arminms/ranx/actions/workflows/cmake-multi-platform.yml/badge.svg)](https://github.com/arminms/ranx/actions/workflows/cmake-multi-platform.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-# p2rng 
-`p2rng` (`P`arallel `P`seudo `R`andom `N`umber `G`enerator) is a modern header-only C++
-library for parallel algorithmic (pseudo) random number generation supporting
+# ranx 
+`ranx` is a next-generation parallel algorithmic (pseudo) random number generator
+available as both a utility, as well as a modern header-only C++ library supporting
 [`OpenMP`](https://www.openmp.org/), [`CUDA`](https://developer.nvidia.com/cuda-zone), [`ROCm`](https://www.amd.com/en/graphics/servers-solutions-rocm) and
 [`oneAPI`](https://www.intel.com/content/www/us/en/developer/tools/oneapi/overview.html).
 
-`p2rng` provides alternatives to STL `generate()` family of algorithms that exclusively designed for parallel random number generation on CPUs and GPUs. Unlike C++17 parallel version of [`std::generate()`](https://en.cppreference.com/w/cpp/algorithm/generate) and [`std::generate_n()`](https://en.cppreference.com/w/cpp/algorithm/generate_n) that cannot be readily used for random number generation, `p2rng::generate()` and `p2rng::generate_n()` can do it hassle-free with almost the
-same interface.
+As a library, `ranx` provides alternatives to STL `generate()` family of algorithms that exclusively designed for parallel random number generation on CPUs and GPUs. Unlike C++17 parallel version of [`std::generate()`](https://en.cppreference.com/w/cpp/algorithm/generate) and [`std::generate_n()`](https://en.cppreference.com/w/cpp/algorithm/generate_n) that cannot be readily used for random number generation, `ranx::generate()` and `ranx::generate_n()` can do it hassle-free with almost the same interface.
 
-One important feature of `generate()` algorithms provided by `p2rng` is that they play fair: using the same seed and distribution, you can get the same sequence of random numbers on all supported platforms regardless of the number of parallel threads. CUDA, ROCm and oneAPI provide their own parallel random number libraries: [cuRAND](https://docs.nvidia.com/cuda/curand/index.html), [rocRAND](https://rocm.docs.amd.com/projects/rocRAND) and [oneMKL](https://www.intel.com/content/www/us/en/docs/oneapi/programming-guide/2023-2/overview.html). Aside from the fact that their interface is not compatible with STL, it's almost impossible to get the the same sequence of random numbers using them.
+One important feature of `generate()` algorithms provided by `ranx` is that they play fair: using the same seed and distribution, you can get the same sequence of random numbers on all supported platforms regardless of the number of parallel threads. CUDA, ROCm and oneAPI provide their own parallel random number libraries: [cuRAND](https://docs.nvidia.com/cuda/curand/index.html), [rocRAND](https://rocm.docs.amd.com/projects/rocRAND) and [oneMKL](https://www.intel.com/content/www/us/en/docs/oneapi/programming-guide/2023-2/overview.html). Aside from the fact that their interface is not compatible with STL, it's difficult, if not impossible, to get the the same sequence of random numbers using them.
 
 ## Table of contents
 - [Features](#features)
 - [Building from source](#building-from-source)
 - [Running unit tests](#running-unit-tests)
 - [Running benchmarks](#running-benchmarks)
-- [Using *p2rng*](#using-p2rng)
+- [Using *ranx*](#using-ranx)
   - [Example](#example)
   - [YouTube Video](#youtube-video)
 
@@ -58,8 +57,8 @@ module load cmake googlebenchmark catch2
 Once you have all the requirements you can build and install it using the
 following commands:
 ```shell
-git clone https://github.com/arminms/p2rng.git
-cd p2rng
+git clone https://github.com/arminms/ranx.git
+cd ranx
 cmake -S . -B build
 cmake --build build -j
 sudo cmake --install build
@@ -74,60 +73,60 @@ ctest
 cd build
 perf/benchmarks --benchmark_counters_tabular=true
 ```
-## Using `p2rng`
-Ideally you should be using `p2rng` through its CMake integration. `CMake` build
-of `p2rng` exports four (namespaced) targets:
-- `p2rng::cuda`
-- `p2rng::oneapi`
-- `p2rng::openmp`
-- `p2rng::rocm`
+## Using `ranx`
+Ideally you should be using `ranx` through its CMake integration. `CMake` build
+of `ranx` exports four (namespaced) targets:
+- `ranx::cuda`
+- `ranx::oneapi`
+- `ranx::openmp`
+- `ranx::rocm`
 
 Linking against them adds the proper include paths and links your target with
-proper libraries depending on the API. This means that if `p2rng` has been installed on the system, it should be enough to do:
+proper libraries depending on the API. This means that if `ranx` has been installed on the system, it should be enough to do:
 ```cmake
-find_package(p2rng CONFIG COMPONENTS openmp cuda)
+find_package(ranx CONFIG COMPONENTS openmp cuda)
 
-# link test.cpp with p2rng using OpenMP API
+# link test.cpp with ranx using OpenMP API
 add_executable(test_openmp test.cpp)
-target_link_libraries(test_openmp PRIVATE p2rng::openmp)
+target_link_libraries(test_openmp PRIVATE ranx::openmp)
 
-# link test.cu with p2rng using CUDA API
+# link test.cu with ranx using CUDA API
 add_executable(test_cuda test.cu)
-target_link_libraries(test_cuda PRIVATE p2rng::cuda)
+target_link_libraries(test_cuda PRIVATE ranx::cuda)
 ```
 
-Another possibility is to check if `p2rng` is installed and if not use
+Another possibility is to check if `ranx` is installed and if not use
 [FetchContent](https://cmake.org/cmake/help/latest/module/FetchContent.html):
 
 ```cmake
 # include the module
 include(FetchContent)
 
-# first check if p2rng is already installed
-find_package(p2rng CONFIG COMPONENTS oneapi)
+# first check if ranx is already installed
+find_package(ranx CONFIG COMPONENTS oneapi)
 
 # if not, try to fetch and make it available
-if(NOT p2rng_FOUND)
-  message(STATUS "Fetching p2rng library...")
+if(NOT ranx_FOUND)
+  message(STATUS "Fetching ranx library...")
   FetchContent_Declare(
-    p2rng
-    GIT_REPOSITORY https://github.com/arminms/p2rng.git
+    ranx
+    GIT_REPOSITORY https://github.com/arminms/ranx.git
     GIT_TAG main
   )
-  # setting required p2rng components
-  set(P2RNG_COMPONENTS oneapi CACHE STRING "Required components")
-  FetchContent_MakeAvailable(p2rng)
+  # setting required ranx components
+  set(RANX_COMPONENTS oneapi CACHE STRING "Required components")
+  FetchContent_MakeAvailable(ranx)
 endif()
 
-# link test.cpp with p2rng using oneapi as API
+# link test.cpp with ranx using oneapi as API
 add_executable(test_oneapi test.cpp)
-target_link_libraries(test_oneapi PRIVATE p2rng::oneapi)
+target_link_libraries(test_oneapi PRIVATE ranx::oneapi)
 ```
 ### Example
 You can find a complete example of the above approach in the [`example`](example/) folder along with build instructions.
 
 ### YouTube Video
-There is a recorded video about `p2rng` on [SHARCNET YouTube Channel](https://youtube.sharcnet.ca):
+There is a recorded video about `ranx` on [SHARCNET YouTube Channel](https://youtube.sharcnet.ca):
 
 * [p2rng – A C++ Parallel Random Number Generator Library for the Masses](https://youtu.be/nyOH8nvHBss)
 
