@@ -1,3 +1,10 @@
+<div align="center">
+  <a href="https://github.com/arminms/ranx">
+    <img width="256" heigth="256" src="docs/images/ranx_logo.svg">
+  </a>
+  <h1>RANX</h1>
+</div>
+
 [![Build and Test (Linux/macOS/Windows)](https://github.com/arminms/ranx/actions/workflows/cmake-multi-platform.yml/badge.svg)](https://github.com/arminms/ranx/actions/workflows/cmake-multi-platform.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 # ranx 
