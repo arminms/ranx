@@ -1,10 +1,7 @@
 [![Build and Test (Linux/macOS/Windows)](https://github.com/arminms/ranx/actions/workflows/cmake-multi-platform.yml/badge.svg)](https://github.com/arminms/ranx/actions/workflows/cmake-multi-platform.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 # ranx 
-`ranx` is a next-generation parallel algorithmic (pseudo) random number generator
-available as both a utility, as well as a modern header-only C++ library supporting
-[`OpenMP`](https://www.openmp.org/), [`CUDA`](https://developer.nvidia.com/cuda-zone), [`ROCm`](https://www.amd.com/en/graphics/servers-solutions-rocm) and
-[`oneAPI`](https://www.intel.com/content/www/us/en/developer/tools/oneapi/overview.html).
+`ranx` is a next-generation parallel algorithmic (pseudo) random number generator available as both a utility, as well as a modern header-only C++ library supporting [`OpenMP`](https://www.openmp.org/), [`CUDA`](https://developer.nvidia.com/cuda-zone), [`ROCm`](https://www.amd.com/en/graphics/servers-solutions-rocm) and [`oneAPI`](https://www.intel.com/content/www/us/en/developer/tools/oneapi/overview.html).
 
 As a library, `ranx` provides alternatives to STL `generate()` family of algorithms that exclusively designed for parallel random number generation on CPUs and GPUs. Unlike C++17 parallel version of [`std::generate()`](https://en.cppreference.com/w/cpp/algorithm/generate) and [`std::generate_n()`](https://en.cppreference.com/w/cpp/algorithm/generate_n) that cannot be readily used for random number generation, `ranx::generate()` and `ranx::generate_n()` can do it hassle-free with almost the same interface.
 
