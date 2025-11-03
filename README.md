@@ -121,10 +121,3 @@ target_link_libraries(test_oneapi PRIVATE ranx::oneapi)
 ```
 ### Example
 You can find a complete example of the above approach in the [`example`](example/) folder along with build instructions.
-
-### YouTube Video
-There is a recorded video about `ranx` on [SHARCNET YouTube Channel](https://youtube.sharcnet.ca):
-
-* [p2rng – A C++ Parallel Random Number Generator Library for the Masses](https://youtu.be/nyOH8nvHBss)
-
-You can find PDF of the slides in the [doc](./doc) folder. All the codes shown in the above video are also included in the [doc/codes](./doc/codes) folder along with a CMake script to build them.
