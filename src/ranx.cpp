@@ -50,8 +50,9 @@ void print_help()
     std::cout << "Usage: " << PROGRAM_NAME << " [OPTION]\n\n"
               << "Write random numbers to standard output.\n\n"
               << "Options:\n"
-              << "  -N count           the count of random numbers (default 1)\n"
-              << "  -M, --max number   the limit of the random numbers (default 32576)\n"
+              << "  -N count           the count of random numbers (default=1)\n"
+              << "  -L, --min number   the lower limit of the random numbers (default=0)\n"
+              << "  -M, --max number   the upper limit of the random numbers (default=32576)\n"
               << "  -u, --unique       generate unique numbers (non duplicate values)\n"
               << "  -f                 generate float numbers from 0 to 1\n"
               << "  -p precision       the precision of float numbers (activates -f)\n"
@@ -98,6 +99,7 @@ int main(int argc, char* argv[])
 {
     // Default parameters
     size_t count = 1;
+    int min_value = 0;
     int max_value = 32576;
     bool unique = false;
     bool generate_float = false;
@@ -122,6 +124,8 @@ int main(int argc, char* argv[])
         }
         else if (arg == "-N" && i + 1 < argc)
             count = std::stoull(argv[++i]);
+        else if ((arg == "-L" || arg == "--min") && i + 1 < argc)
+            min_value = std::stoi(argv[++i]);
         else if ((arg == "-M" || arg == "--max") && i + 1 < argc)
             max_value = std::stoi(argv[++i]);
         else if (arg == "-u" || arg == "--unique")
@@ -176,14 +180,14 @@ int main(int argc, char* argv[])
     }
     else if (unique)
     {   // Generate unique integers
-        if (count > static_cast<size_t>(max_value + 1))
-        {   std::cerr << PROGRAM_NAME << ": error: cannot generate more unique numbers than max+1\n";
+        if (count > static_cast<size_t>(max_value - min_value + 1))
+        {   std::cerr << PROGRAM_NAME << ": error: cannot generate more unique numbers than max-min+1\n";
             return 1;
         }
 
         // Create a vector with all possible values
-        std::vector<int> all_numbers(max_value + 1);
-        std::iota(all_numbers.begin(), all_numbers.end(), 0);
+        std::vector<int> all_numbers(max_value - min_value + 1);
+        std::iota(all_numbers.begin(), all_numbers.end(), min_value);
 
         // Shuffle using standard algorithm
         std::shuffle
@@ -205,7 +209,7 @@ int main(int argc, char* argv[])
         ranx::generate_n
         (   std::begin(numbers)
         ,   count
-        ,   ranx::bind(trng::uniform_int_dist(0, max_value), pcg32(seed))
+        ,   ranx::bind(trng::uniform_int_dist(min_value, max_value), pcg32(seed))
         );
 
         for (size_t i = 0; i < count; ++i)

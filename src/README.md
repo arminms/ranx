@@ -42,7 +42,8 @@ ranx [OPTION]
 ### Options
 
 - `-N count` - Number of random numbers to generate (default: 1)
-- `-M, --max number` - Maximum value for random numbers (default: 32576)
+- `-L, --min number` - The lower limit of the random numbers (default=0)
+- `-M, --max number` - The upper limit of the random numbers (default: 32576)
 - `-u, --unique` - Generate unique numbers without duplicates
 - `-f` - Generate floating-point numbers between 0 and 1
 - `-p precision` - Set decimal precision for floats (activates `-f`)
@@ -60,14 +61,14 @@ Generate 10 random numbers:
 ranx -N 10
 ```
 
-Generate 5 numbers between 0 and 100:
+Generate 5 numbers from 0 to 100 (closed range):
 ```bash
 ranx -N 5 -M 100
 ```
 
-Generate 10 unique numbers from 0 to 20:
+Generate 10 unique numbers from 10 to 20 (closed range):
 ```bash
-ranx -N 10 -u -M 20
+ranx -N 10 -u -L 10 -M 20
 ```
 
 Generate 5 floating-point numbers with 4 decimal places:
@@ -129,6 +130,7 @@ This implementation provides similar functionality to the Ubuntu `rand` utility 
 - Seed-based reproducibility
 
 ### Differences
+- Does support a new flag for the low limit (`-L`/`--min` flags)
 - Uses high-quality PCG32 engine (vs. standard C library RNG)
 - Built on the ranx parallel generation library
 - Does not support backslash escape interpretation (`-e`/`-E` flags)
