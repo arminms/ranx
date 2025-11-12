@@ -1,0 +1,61 @@
+//
+// Copyright (c) 2025 Armin Sobhani (https://arminsobhani.ca)
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+//
+#ifndef _RANX_RANDOM_
+#define _RANX_RANDOM_
+
+#include <ranx/bind.hpp>
+#include <ranx/pcg/pcg_random.hpp>
+#include <ranx/trng/bernoulli_dist.hpp>
+#include <ranx/trng/beta_dist.hpp>
+#include <ranx/trng/binomial_dist.hpp>
+#include <ranx/trng/cauchy_dist.hpp>
+#include <ranx/trng/chi_square_dist.hpp>
+#include <ranx/trng/correlated_normal_dist.hpp>
+#include <ranx/trng/discrete_dist.hpp>
+#include <ranx/trng/exponential_dist.hpp>
+#include <ranx/trng/extreme_value_dist.hpp>
+#include <ranx/trng/fast_discrete_dist.hpp>
+#include <ranx/trng/gamma_dist.hpp>
+#include <ranx/trng/geometric_dist.hpp>
+#include <ranx/trng/hypergeometric_dist.hpp>
+#include <ranx/trng/logistic_dist.hpp>
+#include <ranx/trng/lognormal_dist.hpp>
+#include <ranx/trng/maxwell_dist.hpp>
+#include <ranx/trng/negative_binomial_dist.hpp>
+#include <ranx/trng/normal_dist.hpp>
+#include <ranx/trng/pareto_dist.hpp>
+#include <ranx/trng/poisson_dist.hpp>
+#include <ranx/trng/powerlaw_dist.hpp>
+#include <ranx/trng/rayleigh_dist.hpp>
+#include <ranx/trng/snedecor_f_dist.hpp>
+#include <ranx/trng/student_t_dist.hpp>
+#include <ranx/trng/tent_dist.hpp>
+#include <ranx/trng/truncated_normal_dist.hpp>
+#include <ranx/trng/twosided_exponential_dist.hpp>
+#include <ranx/trng/uniform01_dist.hpp>
+#include <ranx/trng/uniform_dist.hpp>
+#include <ranx/trng/uniform_int_dist.hpp>
+#include <ranx/trng/weibull_dist.hpp>
+#include <ranx/trng/zero_truncated_poisson_dist.hpp>
+#include <ranx/algorithm/generate.hpp>
+
+#endif  // _RANX_RANDOM_
