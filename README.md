@@ -22,6 +22,7 @@ One important feature of `generate()` algorithms provided by `ranx` is that they
 - [Using *ranx*](#using-ranx)
   - [Example](#example)
   - [YouTube Video](#youtube-video)
+- [Ranx utility](#ranx-utility)
 
 ## Features
 - Multiplatform
@@ -128,3 +129,7 @@ target_link_libraries(test_oneapi PRIVATE ranx::oneapi)
 ```
 ### Example
 You can find a complete example of the above approach in the [`example`](example/) folder along with build instructions.
+
+## Ranx utility
+
+Ranx library also comes with a command-line random number generator. Check the [ranx utility page](src/README.md).

@@ -38,6 +38,7 @@ include(cmake/BuildType.cmake)
 #
 option(RANX_ENABLE_TESTS "Enable the unit tests ?" ON)
 option(RANX_ENABLE_BENCHMARKS "Enable benchmarks ?" ON)
+option(RANX_BUILD_UTILITY "Build the ranx command-line utility ?" ON)
 
 ## finally our project...
 #
@@ -354,5 +355,11 @@ if (NOT_SUBPROJECT)
       FetchContent_MakeAvailable(benchmark)
     endif()
     add_subdirectory(perf)
+  endif()
+
+  ## add ranx utility program
+  #
+  if(${RANX_BUILD_UTILITY})
+    add_subdirectory(src)
   endif()
 endif(NOT_SUBPROJECT)
