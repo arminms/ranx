@@ -21,7 +21,6 @@ One important feature of `generate()` algorithms provided by `ranx` is that they
 - [Running benchmarks](#running-benchmarks)
 - [Using *ranx*](#using-ranx)
   - [Example](#example)
-  - [YouTube Video](#youtube-video)
 - [Ranx utility](#ranx-utility)
 
 ## Features

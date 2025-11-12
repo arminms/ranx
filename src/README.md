@@ -108,7 +108,7 @@ The utility uses the **PCG32** (Permuted Congruential Generator) engine from the
 
 ### Reproducibility
 
-When you provide the same seed with `-s`, the utility guarantees identical output on all platforms:
+When you provide the same seed with `-s`, the utility guarantees identical output on all supported platforms (Linux/macOS/Windows):
 
 ```bash
 $ ranx -N 5 -s 123
