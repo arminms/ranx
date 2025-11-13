@@ -1,0 +1,165 @@
+.TH RANX 1 "November 2025" "ranx 1.0.0" "User Commands"
+.SH NAME
+ranx \- display random numbers using parallel generation
+.SH SYNOPSIS
+.B ranx
+[\fIOPTION\fR]
+.SH DESCRIPTION
+Write random numbers to standard output using the high-performance ranx library.
+.PP
+The ranx utility generates random numbers using the PCG32 (Permuted Congruential
+Generator) engine with TRNG statistical distributions. It supports parallel
+generation and guarantees reproducible sequences when using the same seed.
+.SH OPTIONS
+.TP
+.B \-N \fIcount\fR
+The count of random numbers to generate (default: 1)
+.TP
+.B \-M\fR, \fB\-\-max \fInumber\fR
+The maximum value for random numbers (default: 32576)
+.TP
+.B \-u\fR, \fB\-\-unique
+Generate unique numbers without duplicate values. Note that count cannot exceed max+1.
+.TP
+.B \-f
+Generate floating-point numbers between 0 and 1
+.TP
+.B \-p \fIprecision\fR
+Set the decimal precision for floating-point numbers (activates \-f)
+.TP
+.B \-s \fInumber\fR
+Set the seed for the random number generator. Using the same seed produces
+identical sequences. Default is based on current time.
+.TP
+.B \-d \fISTRING\fR
+Set the delimiter between numbers (default: space). Supports escape sequences
+like \\n for newline and \\t for tab.
+.TP
+.B \-\-bof \fISTRING\fR
+String to print at the beginning of output (default: nothing)
+.TP
+.B \-\-eof \fISTRING\fR
+String to print at the end of output (default: newline)
+.TP
+.B \-\-help
+Display help message and exit
+.TP
+.B \-\-version
+Output version information and exit
+.SH EXAMPLES
+Generate 10 random numbers:
+.PP
+.nf
+.RS
+ranx \-N 10
+.RE
+.fi
+.PP
+Generate 5 random numbers between 0 and 100:
+.PP
+.nf
+.RS
+ranx \-N 5 \-M 100
+.RE
+.fi
+.PP
+Generate 10 unique numbers from 0 to 20:
+.PP
+.nf
+.RS
+ranx \-N 10 \-u \-M 20
+.RE
+.fi
+.PP
+Generate 5 floating-point numbers with 4 decimal places:
+.PP
+.nf
+.RS
+ranx \-f \-p 4 \-N 5
+.RE
+.fi
+.PP
+Generate numbers separated by commas:
+.PP
+.nf
+.RS
+ranx \-N 5 \-d ", "
+.RE
+.fi
+.PP
+Generate reproducible sequence with a specific seed:
+.PP
+.nf
+.RS
+ranx \-N 10 \-s 42
+.RE
+.fi
+.PP
+Format output as a JSON array:
+.PP
+.nf
+.RS
+ranx \-N 5 \-d ", " \-\-bof "[" \-\-eof "]"
+.RE
+.fi
+.SH REPRODUCIBILITY
+When the same seed is provided with the \fB\-s\fR option, ranx guarantees
+identical output across multiple runs:
+.PP
+.nf
+.RS
+$ ranx \-N 5 \-s 123
+27606 20324 14982 6188 27424
+
+$ ranx \-N 5 \-s 123
+27606 20324 14982 6188 27424
+.RE
+.fi
+.PP
+This reproducibility is maintained across different platforms and thread counts,
+unlike many other random number generators.
+.SH PERFORMANCE
+The ranx utility uses parallel generation with OpenMP, providing high performance
+even for large datasets. Typical performance: ~100,000 numbers in 30ms on modern
+hardware.
+.SH EXIT STATUS
+.TP
+.B 0
+Success
+.TP
+.B 1
+Invalid command-line arguments or impossible parameters (e.g., requesting more
+unique numbers than the range allows)
+.SH TECHNICAL DETAILS
+.TP
+.B Random Number Engine
+PCG32 (Permuted Congruential Generator) providing excellent statistical
+properties, fast generation speed, and small state size
+.TP
+.B Distributions
+.RS
+.IP \(bu 2
+Integers: trng::uniform_int_dist for uniform integer distribution
+.IP \(bu 2
+Floats: trng::uniform01_dist for uniform distribution between 0 and 1
+.IP \(bu 2
+Unique values: Fisher-Yates shuffle via std::shuffle with PCG32
+.RE
+.SH SEE ALSO
+.BR rand (1),
+.BR random (1),
+.BR shuf (1)
+.PP
+PCG Random Number Generators: https://www.pcg-random.org/
+.PP
+ranx library: https://github.com/arminms/ranx
+.SH AUTHOR
+Written by Armin Sobhani.
+.SH COPYRIGHT
+Copyright \(co 2025 Armin Sobhani.
+License: MIT <https://opensource.org/licenses/MIT>
+.br
+This is free software: you are free to change and redistribute it.
+There is NO WARRANTY, to the extent permitted by law.
+.SH BUGS
+Report bugs to: https://github.com/arminms/ranx/issues
