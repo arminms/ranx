@@ -1,0 +1,61 @@
+# See docs at: https://mystmd.org/guide/frontmatter
+version: 1
+project:
+  id: 802dfd1a-c8b8-48c4-bb07-6decc3f5f023
+  title: Ranx Guide
+  subject: Ranx Guide
+  description: Ranx (Modern header-only C++ library for parallel random number generation)
+  keywords:
+    - C++
+    - random number generation
+    - parallel computing
+    - OpenMP
+    - CUDA
+    - ROCm
+    - oneAPI
+  authors: []
+  github: https://github.com/arminms/ranx
+  license:
+    code: MIT
+    content: CC-BY-4.0
+  references:
+    cling: https://cling.readthedocs.io/en/latest
+    cmake: https://cmake.org/cmake/help/latest
+    g3p: https://armin.sobhani.me/g3p
+    jupyter: https://docs.jupyter.org/en/latest
+    jupyterbook: https://jupyterbook.org/en/stable
+    jupyter-xc: https://armin.sobhani.me/xeus-cling-jupyter
+    xeus-cling: https://xeus-cling.readthedocs.io/en/latest
+    mamba: https://mamba.readthedocs.io/en/latest
+    xwidgets: https://xwidgets.readthedocs.io/en/latest
+  abbreviations:
+    Ranx: RAndom NeXt
+    ARNG: Algorithmic (Pseudo) Random Number Generators
+    PRNG: Pseudorandom Number Generators
+    RNG: Random Number Generators
+    TRNG: True Random Number Generators
+    QRNG: Quantum Random Number Generators
+    RNGs: Random Number Generators
+    LCG: Linear Congruential Generator
+
+  toc:
+    - file: index.md
+    - file: quickstart.md
+    - file: ranx_utility.md
+    - title: Tutorials
+      children:
+        - file: 01_randomness_primer.md
+        - file: 02_serial_random_number_generation.md
+        - file: 03_parallel_random_number_generation.md
+        - file: 04_working_with_ranx.md
+    # - file: distributions.md
+
+site:
+  template: book-theme
+  # hide_toc: true
+  options:
+    favicon: ./images/ranx_logo.png
+    logo: ./images/ranx_logo.svg
+    logo_dark: ./images/ranx_logo.svg
+    logo_text: Ranx
+    analytics_google: G-3GVV5PE8PC
