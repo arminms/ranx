@@ -48,7 +48,7 @@ project:
         - file: 02_serial_random_number_generation.md
         - file: 03_parallel_random_number_generation.md
         - file: 04_working_with_ranx.md
-    # - file: distributions.md
+    - file: distributions.md
 
 site:
   template: book-theme
