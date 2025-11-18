@@ -1,3 +1,9 @@
 *build*
 *.out
+*.ipynb
 .vscode
+.jupyter
+.ipython
+.ipynb_checkpoints
+.local
+.npm
