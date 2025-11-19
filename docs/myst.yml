@@ -64,8 +64,8 @@ site:
     analytics_google: G-3GVV5PE8PC
   nav:
     - title: Overview
-      url: /ranx/index
+      url: /index
     - title: Quickstart
-      url: /ranx/quickstart
-    - title: Try Ranx
-      url: https://mybinder.org/v2/gh/arminms/ranx/HEAD?labpath=01_randomness_primer.ipynb
+      url: /quickstart
+    - title: Guide
+      url: /working_with_ranx
