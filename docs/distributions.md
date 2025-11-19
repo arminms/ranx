@@ -85,12 +85,14 @@ Testing <wiki:Poisson_distribution>
 ```{code-cell} cpp
 :label: common_code
 :tags: [remove-cell]
+
+// load the OpenMP library required by Ranx
+#pragma cling add_include_path("/usr/lib/llvm-10/include/openmp")
+#pragma cling load("libomp.so.5")
+
 #include <vector>
 #include <g3p/gnuplot>
 #include <ranx/random>
-
-#pragma cling add_include_path("/usr/lib/gcc/x86_64-linux-gnu/9/include")
-#pragma cling load("libomp.so.5")
 
 size_t count = 100'000;
 float binwidth = 1.0f;
@@ -155,10 +157,10 @@ gp  << "plot"
 ```{code-cell} cpp
 :label: log_normal_plot
 :tags: [remove-cell]
-ranx::generate_n(std::begin(v1), count, ranx::bind(trng::lognormal_dist{0.0, 1.3},pcg32{}));
-ranx::generate_n(std::begin(v2), count, ranx::bind(trng::lognormal_dist{1.0, 1.0},pcg32{}));
-ranx::generate_n(std::begin(v3), count, ranx::bind(trng::lognormal_dist{2.0, 1.0},pcg32{}));
-ranx::generate_n(std::begin(v4), count, ranx::bind(trng::lognormal_dist{3.0, 1.0},pcg32{}));
+std::generate_n(std::begin(v1), count, std::bind(std::lognormal_distribution{0.0, 1.3},pcg32{}));
+std::generate_n(std::begin(v2), count, std::bind(std::lognormal_distribution{1.0, 1.0},pcg32{}));
+std::generate_n(std::begin(v3), count, std::bind(std::lognormal_distribution{2.0, 1.0},pcg32{}));
+std::generate_n(std::begin(v4), count, std::bind(std::lognormal_distribution{3.0, 1.0},pcg32{}));
 auto log_norm1 = make_data_block(gp, v1, 1);
 auto log_norm2 = make_data_block(gp, v2, 1);
 auto log_norm3 = make_data_block(gp, v3, 1);
@@ -182,10 +184,10 @@ gp  << "set xrange [0:10]\n"
 ```{code-cell} cpp
 :label: poisson_plot
 :tags: [remove-cell]
-ranx::generate_n(std::begin(v1), count, ranx::bind(trng::poisson_dist{10.0},pcg32{}));
-ranx::generate_n(std::begin(v2), count, ranx::bind(trng::poisson_dist{20.0},pcg32{}));
-ranx::generate_n(std::begin(v3), count, ranx::bind(trng::poisson_dist{40.0},pcg32{}));
-ranx::generate_n(std::begin(v4), count, ranx::bind(trng::poisson_dist{75.0},pcg32{}));
+std::generate_n(std::begin(v1), count, std::bind(std::poisson_distribution{10.0},pcg32{}));
+std::generate_n(std::begin(v2), count, std::bind(std::poisson_distribution{20.0},pcg32{}));
+std::generate_n(std::begin(v3), count, std::bind(std::poisson_distribution{40.0},pcg32{}));
+std::generate_n(std::begin(v4), count, std::bind(std::poisson_distribution{75.0},pcg32{}));
 auto poisson1 = make_data_block(gp, v1, 1);
 auto poisson2 = make_data_block(gp, v2, 1);
 auto poisson3 = make_data_block(gp, v3, 1);

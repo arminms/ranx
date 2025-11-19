@@ -15,11 +15,11 @@ Ranx command line tool is a parallel random number generator utility built on th
 
 ## Features
 
-- **Fast parallel random number generation** using the PCG family of generators
+- **Fast parallel random number generation** using the [PCG family](./04_working_with_ranx.md#supported_engines) of generators
 - **Reproducible sequences** across all platforms when using the same seed
 - **Multiple output formats**: integers, floats, unique values
 - **Flexible formatting**: custom delimiters and output boundaries
-- **High-quality randomness** using [PCG32](https://www.pcg-random.org/) engine with [TRNG](https://github.com/rabauke/trng4) distributions
+- **High-quality randomness** using [PCG32](./04_working_with_ranx.md#supported_engines) engine with [TRNG](./04_working_with_ranx.md#supported_distributions) distributions
 
 ## Building
 
@@ -113,7 +113,7 @@ Format as a JSON array:
 
 ### Random Number Engine
 
-The utility uses the **PCG32** (Permuted Congruential Generator) engine from the PCG family, which provides:
+The utility uses the **PCG32** (Permuted Congruential Generator) engine from the [PCG family](./04_working_with_ranx.md#supported_engines), which provides:
 - Excellent statistical properties
 - Fast generation speed
 - Small state size
@@ -123,7 +123,7 @@ The utility uses the **PCG32** (Permuted Congruential Generator) engine from the
 
 - **Integers**: Uses `trng::uniform_int_dist` for uniform integer distribution
 - **Floats**: Uses `trng::uniform01_dist` for uniform distribution between 0 and 1
-- **Unique values**: Uses Fisher-Yates shuffle via `std::shuffle` with PCG32 (not parallel yet)
+- **Unique values**: Uses Fisher-Yates shuffle via `std::shuffle` with *PCG32* (not parallel yet)
 
 ### Reproducibility
 

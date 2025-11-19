@@ -62,7 +62,16 @@ cd build && perf/benchmarks --benchmark_counters_tabular=true
 ```
 ::::
 
+(developing_w_ranx)=
 ## Developing with Ranx
+
+To start using Ranx in your code, you just need to include the header:
+
+```cpp
+#include <ranx/random>
+```
+
+That will also include all the engines and the distributions that come with it.
 
 Ranx exports four (namespaced) <wiki:CMake> targets and also <wiki:CMake> config scripts for downstream applications:
 
@@ -71,8 +80,7 @@ Ranx exports four (namespaced) <wiki:CMake> targets and also <wiki:CMake> config
 - `ranx::openmp`
 - `ranx::rocm`
 
-Linking against them adds the proper include paths and links your target with
-proper libraries depending on the API. This means if your project also relies on <wiki:CMake> and Ranx has been installed on your system, a better option is to use [`find_package()`](xref:cmake#command/find_package) in your project's `CMakeLists.txt` as shown below:
+Linking against them adds the proper include paths and links your target with proper libraries depending on the API. This means if your project also relies on <wiki:CMake> and Ranx has been installed on your system, a better option is to use [`find_package()`](xref:cmake#command/find_package) in your project's `CMakeLists.txt` as shown below:
 
 ```cmake
 find_package(ranx CONFIG COMPONENTS openmp cuda)
@@ -115,7 +123,7 @@ add_executable(test_oneapi test.cpp)
 target_link_libraries(test_oneapi PRIVATE ranx::oneapi)
 ```
 
-The above approach first tries to find an installed version of Ranx and if it cannot then tries to fetch it from the repository. You can find a complete example of the above approach in the [`example`](https://github.com/arminms/ranx/blob/main/example/CMakeLists.txt#L5-L28) folder.
+The above approach first tries to find an installed version of Ranx and if it cannot then tries to fetch it from the repository. You can find a complete example of the above approach in the [`example`](https://github.com/arminms/ranx/blob/main/example/CMakeLists.txt#L12-L28) folder.
 ::::
 
 (jupyter-rapid-prototyping)=

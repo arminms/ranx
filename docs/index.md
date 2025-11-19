@@ -6,7 +6,7 @@ description: Ranx (RANdom neXt) is a next-generation parallel algorithmic (pseud
 
 [![GitHub Release](https://img.shields.io/github/v/release/arminms/ranx?logo=github&logoColor=lightgray)](https://github.com/arminms/ranx/releases)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/arminms/ranx/HEAD?labpath=01_the_basics.ipynb)
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/arminms/ranx/HEAD?labpath=01_randomness_primer.ipynb)
 
 ---
 
@@ -64,17 +64,17 @@ _Be advised sometimes it takes several minutes to start!_
 ::::{grid} 1 1 2 2
 
 :::{card}
-:header: 🧮 [Support both CPU and GPU](./quickstart.md#jupyter-rapid-prototyping)
-:footer: [Learn more »](./quickstart.md#jupyter-rapid-prototyping)
+:header: 🧮 [Support both CPU and GPU](./04_working_with_ranx.md#ranx_tranformation_tab)
+:footer: [Learn more »](./04_working_with_ranx.md)
 
-Ranx uses [block splitting](https://github.com/arminms/ranx/blob/main/include/ranx/algorithm/generate.hpp#L314-L333) and [leapfrog](https://github.com/arminms/ranx/blob/main/include/ranx/algorithm/generate.hpp#L30-L41) algorithms for parallel random number generation on CPU and GPU, respectively.
+Ranx uses [block splitting](https://github.com/arminms/ranx/blob/main/include/ranx/algorithm/generate.hpp#L320-L330) and [leapfrog](https://github.com/arminms/ranx/blob/main/include/ranx/algorithm/generate.hpp#L31-L41) algorithms for parallel random number generation on CPU and GPU, respectively.
 :::
 
 :::{card}
-:header: 🎲 [Play fair](./03_animating_plots.md#sine_wave_gif)
-:footer: [Learn more »](./03_animating_plots.md#animate_terminals)
+:header: 🎲 [Play fair](./04_working_with_ranx.md#check_fair_play)
+:footer: [Learn more »](./04_working_with_ranx.md)
 
-Using the same seed, Ranx always generates the same sequence, independent of the number of parallel threads and the underlying hardware.
+Using the same seed, Ranx always generates the same sequence, independent of the number of parallel threads and the underlying hardware on all platforms.
 :::
 
 ::::
@@ -88,8 +88,8 @@ Using the same seed, Ranx always generates the same sequence, independent of the
 - 🎲 Play fair on all supported platforms
 - 💥 No dependencies
 - 🖇️ Header-only
-- 🎱 Include [PCG Family](wiki:Permuted_congruential_generator) as engine
-- 📊 Include 32 distributions provided by [TRNG](https://github.com/rabauke/trng4) library
+- 🎱 Include [PCG family](./04_working_with_ranx.md#supported_engines) as engine
+- 📊 Include 32 distributions provided by [TRNG](./04_working_with_ranx.md#supported_distributions) library
 - 📥 Easily integrates with existing libraries and code (via <wiki:CMake> configs)
 - 🧪 Include unit tests using [`Catch2`](https://github.com/catchorg/Catch2)
 - 🏃 Include benchmarks using [`Google Benchmark`](https://github.com/google/benchmark)

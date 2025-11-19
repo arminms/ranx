@@ -15,6 +15,9 @@ project:
     - oneAPI
   authors: []
   github: https://github.com/arminms/ranx
+  jupyter:
+    binder: true
+    kernelName: xcpp17-openmp
   license:
     code: MIT
     content: CC-BY-4.0
@@ -59,3 +62,10 @@ site:
     logo_dark: ./images/ranx_logo.svg
     logo_text: Ranx
     analytics_google: G-3GVV5PE8PC
+  nav:
+    - title: Overview
+      url: /ranx/index
+    - title: Quickstart
+      url: /ranx/quickstart
+    - title: Try Ranx
+      url: https://mybinder.org/v2/gh/arminms/ranx/HEAD?labpath=01_randomness_primer.ipynb
