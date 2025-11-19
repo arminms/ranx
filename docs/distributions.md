@@ -8,6 +8,12 @@ kernelspec:
   display_name: C++17-OpenMP
 ---
 
+````{seealso} Initial setup
+:class: dropdown
+```{embed} #common_code
+```
+````
+
 `````{div}
 :class: col-gutter-left align-middle
 ````{figure} #normal_plot
@@ -18,8 +24,7 @@ kernelspec:
 `````{div}
 :class: col-body-right
 
-## Normal distribution
-Testing <wiki:normal_distribution> with [](#common_code)
+## [Normal distribution](wiki:normal_distribution)
 ````{dropdown} Code
 ```{embed} #normal_plot
 :remove-input: false
@@ -42,8 +47,7 @@ Testing <wiki:normal_distribution> with [](#common_code)
 `````{div}
 :class: col-body-right
 
-## Log-normal distribution
-Testing <wiki:Log-normal_distribution>
+## [Log-normal distribution](wiki:Log-normal_distribution)
 ````{dropdown} Code
 ```{embed} #log_normal_plot
 :remove-input: false
@@ -66,8 +70,7 @@ Testing <wiki:Log-normal_distribution>
 `````{div}
 :class: col-body-right
 
-## Poisson distribution
-Testing <wiki:Poisson_distribution>
+## [Poisson distribution](wiki:Poisson_distribution)
 ````{dropdown} Code
 ```{embed} #poisson_plot
 :remove-input: false
@@ -80,14 +83,14 @@ Testing <wiki:Poisson_distribution>
 ````
 `````
 
-%-- Normal distribution --------------------------------------------------------
+%-- common code ----------------------------------------------------------------
 
 ```{code-cell} cpp
 :label: common_code
 :tags: [remove-cell]
 
 // load the OpenMP library required by Ranx
-#pragma cling add_include_path("/usr/lib/llvm-10/include/openmp")
+#pragma cling add_include_path("/usr/lib/llvm-9/include/openmp")
 #pragma cling load("libomp.so.5")
 
 #include <vector>
@@ -115,13 +118,8 @@ gp  ( "set border 31 linecolor '#555555'" )
     ("set title 'Distribution Histogram'")
     ("set xlabel 'X' tc '#555555'")
     ("set ylabel 'Frequency' tc '#555555'")
-    // ("set style fill solid 0.5")
-    // ("set boxwidth binwidth * 0.9")
     ("set xrange [binstart:binstart + 100]")
     ("set yrange [0:*]")
-    // ( "set grid mxtics mytics noxtics noytics ls 101" )
-    // ( "set mxtics 10" )
-    // ( "set encoding utf8" )
 ;
 ```
 +++
