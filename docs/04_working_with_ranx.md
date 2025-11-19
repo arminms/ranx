@@ -125,7 +125,7 @@ Let’s start with the [serial code](./02_serial_random_number_generation.md#gen
 
 ```{code-cell} cpp
 // setting OpenMP headers and library required by Ranx
-#pragma cling add_include_path("/usr/lib/llvm-10/include/openmp")
+#pragma cling add_include_path("/usr/lib/llvm-9/include/openmp")
 #pragma cling load("libomp.so.5")
 ```
 +++
