@@ -50,6 +50,8 @@ Use the following command after building if you like to run the unit tests as we
 ```bash
 cd build && ctest
 ```
+
+To build unit tests for other APIs add, `-DRANX_TARGET_API=<API-NAME>` to the `cmake -S . -B build` command, replacing the `<API-NAME>` with `cuda`, `rocm` or `oneapi`.
 ::::
 
 ::::{hint} Running benchmarks 🏃
@@ -60,6 +62,8 @@ Use the following command after building if you like to run the benchmarks:
 ```bash
 cd build && perf/benchmarks --benchmark_counters_tabular=true
 ```
+
+To build benchmarks for other APIs, add `-DRANX_TARGET_API=<API-NAME>` to the `cmake -S . -B build` command, replacing the `<API-NAME>` with `cuda`, `rocm` or `oneapi`.
 ::::
 
 (developing_w_ranx)=
