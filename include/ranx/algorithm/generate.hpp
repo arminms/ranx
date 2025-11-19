@@ -317,7 +317,7 @@ inline OutputIt generate_n
 ,   Size n
 ,   Generator g
 )
-{
+{   // block splitting algorithm
     #pragma omp parallel
     {   auto tidx{omp_get_thread_num()};
         auto size{omp_get_num_threads()};
