@@ -2,17 +2,20 @@
   <a href="https://github.com/arminms/ranx">
     <img width="256" heigth="256" src="docs/images/ranx_logo.svg">
   </a>
-  <h1>RANX</h1>
+  <h1>Ranx</h1>
 </div>
 
 [![Build and Test (Linux/macOS/Windows)](https://github.com/arminms/ranx/actions/workflows/cmake-multi-platform.yml/badge.svg)](https://github.com/arminms/ranx/actions/workflows/cmake-multi-platform.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-# ranx 
-`ranx` is a next-generation parallel algorithmic (pseudo) random number generator available as both a utility, as well as a modern header-only C++ library supporting [`OpenMP`](https://www.openmp.org/), [`CUDA`](https://developer.nvidia.com/cuda-zone), [`ROCm`](https://www.amd.com/en/graphics/servers-solutions-rocm) and [`oneAPI`](https://www.intel.com/content/www/us/en/developer/tools/oneapi/overview.html).
+[![view documentation](https://img.shields.io/badge/view-documentation-yellow?style=flat&logo=github&logoColor=lightgray)](https://armin.sobhani.me/ranx/)
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/arminms/ranx/HEAD?labpath=01_randomness_primer.ipynb)
 
-As a library, `ranx` provides alternatives to STL `generate()` family of algorithms that exclusively designed for parallel random number generation on CPUs and GPUs. Unlike C++17 parallel version of [`std::generate()`](https://en.cppreference.com/w/cpp/algorithm/generate) and [`std::generate_n()`](https://en.cppreference.com/w/cpp/algorithm/generate_n) that cannot be readily used for random number generation, `ranx::generate()` and `ranx::generate_n()` can do it hassle-free with almost the same interface.
 
-One important feature of `generate()` algorithms provided by `ranx` is that they play fair: using the same seed and distribution, you can get the same sequence of random numbers on all supported platforms regardless of the number of parallel threads. CUDA, ROCm and oneAPI provide their own parallel random number libraries: [cuRAND](https://docs.nvidia.com/cuda/curand/index.html), [rocRAND](https://rocm.docs.amd.com/projects/rocRAND) and [oneMKL](https://www.intel.com/content/www/us/en/docs/oneapi/programming-guide/2023-2/overview.html). Aside from the fact that their interface is not compatible with STL, it's difficult, if not impossible, to get the the same sequence of random numbers using them.
+`Ranx` is a next-generation parallel algorithmic (pseudo) random number generator available as both a utility, as well as a modern header-only C++ library supporting [`OpenMP`](https://www.openmp.org/), [`CUDA`](https://developer.nvidia.com/cuda-zone), [`ROCm`](https://www.amd.com/en/graphics/servers-solutions-rocm) and [`oneAPI`](https://www.intel.com/content/www/us/en/developer/tools/oneapi/overview.html).
+
+As a library, `Ranx` provides alternatives to STL `generate()` family of algorithms that exclusively designed for parallel random number generation on CPUs and GPUs. Unlike C++17 parallel version of [`std::generate()`](https://en.cppreference.com/w/cpp/algorithm/generate) and [`std::generate_n()`](https://en.cppreference.com/w/cpp/algorithm/generate_n) that cannot be readily used for random number generation, `ranx::generate()` and `ranx::generate_n()` can do it hassle-free with almost the same interface.
+
+One important feature of `generate()` algorithms provided by `Ranx` is that they play fair: using the same seed and distribution, you can get the same sequence of random numbers on all supported platforms regardless of the number of parallel threads. CUDA, ROCm and oneAPI provide their own parallel random number libraries: [cuRAND](https://docs.nvidia.com/cuda/curand/index.html), [rocRAND](https://rocm.docs.amd.com/projects/rocRAND) and [oneMKL](https://www.intel.com/content/www/us/en/docs/oneapi/programming-guide/2023-2/overview.html). Aside from the fact that their interface is not compatible with STL, it's difficult, if not impossible, to get the the same sequence of random numbers using them.
 
 ## Table of contents
 - [Features](#features)
@@ -77,16 +80,16 @@ ctest
 cd build
 perf/benchmarks --benchmark_counters_tabular=true
 ```
-## Using `ranx`
-Ideally you should be using `ranx` through its CMake integration. `CMake` build
-of `ranx` exports four (namespaced) targets:
+## Using `Ranx`
+Ideally you should be using `Ranx` through its CMake integration. `CMake` build
+of `Ranx` exports four (namespaced) targets:
 - `ranx::cuda`
 - `ranx::oneapi`
 - `ranx::openmp`
 - `ranx::rocm`
 
 Linking against them adds the proper include paths and links your target with
-proper libraries depending on the API. This means that if `ranx` has been installed on the system, it should be enough to do:
+proper libraries depending on the API. This means that if `Ranx` has been installed on the system, it should be enough to do:
 ```cmake
 find_package(ranx CONFIG COMPONENTS openmp cuda)
 
@@ -99,7 +102,7 @@ add_executable(test_cuda test.cu)
 target_link_libraries(test_cuda PRIVATE ranx::cuda)
 ```
 
-Another possibility is to check if `ranx` is installed and if not use
+Another possibility is to check if `Ranx` is installed and if not use
 [FetchContent](https://cmake.org/cmake/help/latest/module/FetchContent.html):
 
 ```cmake
@@ -131,4 +134,4 @@ You can find a complete example of the above approach in the [`example`](example
 
 ## Ranx utility
 
-Ranx library also comes with a command-line random number generator. Check the [ranx utility page](src/README.md).
+Ranx library also comes with a command-line random number generator. Check the [Ranx utility page](src/README.md).
