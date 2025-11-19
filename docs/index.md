@@ -48,7 +48,7 @@ apptainer run docker://asobhani/ranx:latest
 :class: dropdown
 ::::{grid} 2 2 2 2
 :::{grid-item}
-👉   [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/arminms/ranx/HEAD?labpath=01_preliminary_concepts.ipynb)
+👉   [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/arminms/ranx/HEAD?labpath=01_randomness_primer.ipynb)
 :::
 :::{grid-item}
 _Be advised sometimes it takes several minutes to start!_
