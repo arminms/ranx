@@ -131,7 +131,7 @@ RUN set -ex \
 
 #-- ranx-xeus-cling -------------------------------------------------------------
 
-FROM asobhani/xeus-cling-jupyter:latest AS ranx-xeus-cling
+FROM asobhani/xeus-cling-jupyter:v1.0.0 AS ranx-xeus-cling
 
 LABEL maintainer="Armin Sobhani <arminms@gmail.com>"
 LABEL description="Docker image for Ranx (Modern header-only C++ library for parallel random number generation) with Xeus-Cling"
@@ -167,7 +167,7 @@ COPY --from=ranx /opt/xeus-cling /opt/xeus-cling
 USER ${NB_USER}
 
 # copy tutorial markdowns to the home directory and convert them to notebooks
-COPY --chown=${NB_UID}:${NB_GID} docs/notebooks/*.md ${HOME}/
+COPY --chown=${NB_UID}:${NB_GID} docs/notebooks/*.md docs/images/*.png ${HOME}/
 RUN set -ex \
     && cd ${HOME} \
     && jupytext --to notebook *.md \
