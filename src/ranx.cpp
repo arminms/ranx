@@ -32,7 +32,13 @@
 #include <string>
 #include <vector>
 
+#if defined(__CUDACC__) || defined(__HIP_PLATFORM_AMD__)
+    #include <thrust/universal_vector.h>
+    #include <thrust/device_vector.h>
+#endif
+
 #include <ranx/random>
+
 
 const std::string VERSION = "1.0.0";
 const std::string PROGRAM_NAME = "ranx";
@@ -164,9 +170,14 @@ int main(int argc, char* argv[])
 
     if (generate_float)
     {   // Generate floating point numbers
+#if defined(__CUDACC__) || defined(__HIP_PLATFORM_AMD__)
+        // thrust::universal_vector<double> numbers(count);
+        thrust::device_vector<double> numbers(count);
+        ranx::cuda::generate_n
+#else
         std::vector<double> numbers(count);
-        
         ranx::generate_n
+#endif
         (   std::begin(numbers)
         ,   count
         ,   ranx::bind(trng::uniform01_dist<double>(), pcg32(seed))
@@ -204,9 +215,14 @@ int main(int argc, char* argv[])
     }
     else
     {   // Generate regular integers
+#if defined(__CUDACC__) || defined(__HIP_PLATFORM_AMD__)
+        // thrust::universal_vector<int> numbers(count);
+        thrust::device_vector<int> numbers(count);
+        ranx::cuda::generate_n
+#else
         std::vector<int> numbers(count);
-        
         ranx::generate_n
+#endif
         (   std::begin(numbers)
         ,   count
         ,   ranx::bind(trng::uniform_int_dist(min_value, max_value), pcg32(seed))
