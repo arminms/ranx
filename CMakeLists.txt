@@ -111,6 +111,9 @@ elseif(${RANX_TARGET_API} STREQUAL rocm)
   endif()
   find_package(hip REQUIRED)
   find_package(rocThrust REQUIRED)
+  set(RANX_HIP_AMDGPU_TARGET "gfx90a" CACHE
+    STRING "Choose AMD GPU target ?"
+  )
 elseif(${RANX_TARGET_API} STREQUAL openmp)
   find_package(OpenMP REQUIRED)
   list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
