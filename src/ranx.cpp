@@ -170,10 +170,13 @@ int main(int argc, char* argv[])
 
     if (generate_float)
     {   // Generate floating point numbers
-#if defined(__CUDACC__) || defined(__HIP_PLATFORM_AMD__)
+#if defined(__CUDACC__)
         // thrust::universal_vector<double> numbers(count);
         thrust::device_vector<double> numbers(count);
         ranx::cuda::generate_n
+#elseif defined(__HIP_PLATFORM_AMD__)
+        thrust::device_vector<int> numbers(count);
+        ranx::rocm::generate_n
 #else
         std::vector<double> numbers(count);
         ranx::generate_n
@@ -215,10 +218,13 @@ int main(int argc, char* argv[])
     }
     else
     {   // Generate regular integers
-#if defined(__CUDACC__) || defined(__HIP_PLATFORM_AMD__)
+#if defined(__CUDACC__)
         // thrust::universal_vector<int> numbers(count);
         thrust::device_vector<int> numbers(count);
         ranx::cuda::generate_n
+#elseif defined(__HIP_PLATFORM_AMD__)
+        thrust::device_vector<int> numbers(count);
+        ranx::rocm::generate_n
 #else
         std::vector<int> numbers(count);
         ranx::generate_n
