@@ -35,6 +35,7 @@
 #if defined(__CUDACC__) || defined(__HIP_PLATFORM_AMD__)
     #include <thrust/universal_vector.h>
     #include <thrust/device_vector.h>
+    #include <thrust/host_vector.h>
 #endif
 
 #include <ranx/random>
@@ -42,6 +43,25 @@
 
 const std::string VERSION = "1.0.0";
 const std::string PROGRAM_NAME = "ranx";
+
+template<typename T>
+class no_init
+{   static_assert(
+    std::is_fundamental<T>::value,
+    "should be a fundamental type");
+public: 
+    // constructor without initialization
+    no_init () noexcept {}
+    // implicit conversion T → no_init<T>
+    RANX_DEVICE_CODE
+    constexpr  no_init (T value) noexcept: v_{value} {}
+    // implicit conversion no_init<T> → T
+    RANX_DEVICE_CODE
+    constexpr  operator T () const noexcept { return v_; }
+    private:
+    T v_;
+};
+
 
 void print_version()
 {
@@ -115,6 +135,9 @@ int main(int argc, char* argv[])
     std::string eof_string = "\n";
     std::string bof_string = "";
 
+    std::ios_base::sync_with_stdio(false);  // Disable sync with C stdio
+    std::cin.tie(nullptr);                  // Untie cin from cout
+
     // Parse command line arguments
     for (int i = 1; i < argc; ++i)
     {
@@ -171,21 +194,26 @@ int main(int argc, char* argv[])
     if (generate_float)
     {   // Generate floating point numbers
 #if defined(__CUDACC__)
-        // thrust::universal_vector<double> numbers(count);
-        thrust::device_vector<double> numbers(count);
+        // thrust::universal_vector<float> numbers(count);
+        thrust::device_vector<no_init<float>> d_numbers(count);
         ranx::cuda::generate_n
+        (   d_numbers.begin()
 #elif defined(__HIP_PLATFORM_AMD__)
-        thrust::device_vector<int> numbers(count);
+        thrust::device_vector<no_init<float>> d_numbers(count);
         ranx::rocm::generate_n
+        (   d_numbers.begin()
 #else
-        std::vector<double> numbers(count);
+        std::vector<no_init<float>> numbers(count);
         ranx::generate_n
-#endif
         (   std::begin(numbers)
+#endif
         ,   count
-        ,   ranx::bind(trng::uniform01_dist<double>(), pcg32(seed))
+        ,   ranx::bind(trng::uniform01_dist<float>(), pcg32(seed))
         );
-
+#if defined(__CUDACC__) || defined(__HIP_PLATFORM_AMD__)
+        thrust::host_vector<no_init<float>> numbers(count);
+        thrust::copy(d_numbers.begin(), d_numbers.end(), numbers.begin());
+#endif
         std::cout << std::fixed << std::setprecision(precision);
         for (size_t i = 0; i < count; ++i)
         {   if (i > 0) std::cout << delimiter;
@@ -200,7 +228,7 @@ int main(int argc, char* argv[])
         }
 
         // Create a vector with all possible values
-        std::vector<int> all_numbers(max_value - min_value + 1);
+        std::vector<no_init<int>> all_numbers(max_value - min_value + 1);
         std::iota(all_numbers.begin(), all_numbers.end(), min_value);
 
         // Shuffle using standard algorithm
@@ -219,21 +247,25 @@ int main(int argc, char* argv[])
     else
     {   // Generate regular integers
 #if defined(__CUDACC__)
-        // thrust::universal_vector<int> numbers(count);
-        thrust::device_vector<int> numbers(count);
+        thrust::device_vector<no_init<int>> d_numbers(count);
         ranx::cuda::generate_n
+        (   d_numbers.begin()
 #elif defined(__HIP_PLATFORM_AMD__)
-        thrust::device_vector<int> numbers(count);
+        thrust::device_vector<no_init<int>> d_numbers(count);
         ranx::rocm::generate_n
+        (   d_numbers.begin()
 #else
-        std::vector<int> numbers(count);
+        std::vector<no_init<int>> numbers(count);
         ranx::generate_n
-#endif
         (   std::begin(numbers)
+#endif
         ,   count
         ,   ranx::bind(trng::uniform_int_dist(min_value, max_value), pcg32(seed))
         );
-
+#if defined(__CUDACC__) || defined(__HIP_PLATFORM_AMD__)
+        thrust::host_vector<no_init<int>> numbers(count);
+        thrust::copy(d_numbers.begin(), d_numbers.end(), numbers.begin());
+#endif
         for (size_t i = 0; i < count; ++i)
         {   if (i > 0) std::cout << delimiter;
             std::cout << numbers[i];
