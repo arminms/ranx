@@ -51,6 +51,7 @@ class no_init
     "should be a fundamental type");
 public: 
     // constructor without initialization
+    RANX_DEVICE_CODE
     no_init () noexcept {}
     // implicit conversion T → no_init<T>
     RANX_DEVICE_CODE
