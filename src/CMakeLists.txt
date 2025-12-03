@@ -1,3 +1,17 @@
+find_package(
+  fmt
+  HINTS $ENV{HOME} /usr/local /opt/local /opt
+)
+if(NOT fmt_FOUND)
+    message(STATUS "Fetching fmt library...")
+    FetchContent_Declare(
+      fmt
+      GIT_REPOSITORY https://github.com/fmtlib/fmt
+      GIT_TAG        12.1.0
+    )
+    FetchContent_MakeAvailable(fmt)
+endif()
+
 ## build and install ranx utility
 #
 add_executable(ranx_util ranx.cpp)
@@ -7,7 +21,7 @@ endif()
 if(${RANX_TARGET_API} STREQUAL rocm)
   target_compile_options(ranx_util PRIVATE $<$<COMPILE_LANGUAGE:HIP>:--amdgpu-target=${RANX_HIP_AMDGPU_TARGET}>)
 endif()
-target_link_libraries(ranx_util PRIVATE ${PROJECT_NAME}::${RANX_TARGET_API})
+target_link_libraries(ranx_util PRIVATE ${PROJECT_NAME}::${RANX_TARGET_API} fmt::fmt)
 set_target_properties(ranx_util PROPERTIES OUTPUT_NAME ranx)
 
 install(TARGETS ranx_util
