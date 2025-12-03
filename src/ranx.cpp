@@ -28,6 +28,7 @@
 #include <cstring>
 #include <iomanip>
 #include <iostream>
+#include <charconv>
 #include <set>
 #include <string>
 #include <vector>
@@ -38,11 +39,14 @@
     #include <thrust/host_vector.h>
 #endif
 
-#include <ranx/random>
+#include <fmt/core.h> 
+#include <fmt/format.h>
 
+#include <ranx/random>
 
 const std::string VERSION = "1.0.0";
 const std::string PROGRAM_NAME = "ranx";
+const int BUFFER_SIZE = 65536;
 
 template<typename T>
 class no_init
@@ -63,18 +67,62 @@ public:
     T v_;
 };
 
+template<typename T>
+void fast_print
+(   const T* data
+,   size_t count
+,   const std::string& delimiter
+)
+{   fmt::memory_buffer buffer;
+    buffer.reserve(BUFFER_SIZE);
+    for (size_t i = 0; i < count; ++i)
+    {   if (i > 0)
+            fmt::format_to(std::back_inserter(buffer), "{}", delimiter);
+        fmt::format_to(std::back_inserter(buffer), "{}", static_cast<T>(data[i]));
+        // flush when large
+        if (buffer.size() > BUFFER_SIZE)
+        {   fwrite(buffer.data(), 1, buffer.size(), stdout);
+            buffer.clear();
+        }
+    }
+    // final flush
+    if (buffer.size() > 0)
+        fwrite(buffer.data(), 1, buffer.size(), stdout);
+}
+
+template<typename T>
+void fast_print
+(   const T* data
+,   size_t count
+,   const std::string& delimiter
+,   int precision
+)
+{   fmt::memory_buffer buffer;
+    buffer.reserve(BUFFER_SIZE);
+    for (size_t i = 0; i < count; ++i)
+    {   if (i > 0)
+            fmt::format_to(std::back_inserter(buffer), "{}", delimiter);
+        fmt::format_to(std::back_inserter(buffer), "{:.{}f}", static_cast<T>(data[i]), precision);
+        // flush when large
+        if (buffer.size() > BUFFER_SIZE)
+        {   fwrite(buffer.data(), 1, buffer.size(), stdout);
+            buffer.clear();
+        }
+    }
+    // final flush
+    if (buffer.size() > 0)
+        fwrite(buffer.data(), 1, buffer.size(), stdout);
+}
 
 void print_version()
-{
-    std::cout << PROGRAM_NAME << " version " << VERSION << "\n"
+{   std::cout << PROGRAM_NAME << " version " << VERSION << "\n"
               << "A parallel random number generator using the ranx library\n"
               << "Copyright (c) 2025 Armin Sobhani\n"
               << "License: MIT\n";
 }
 
 void print_help()
-{
-    std::cout << "Usage: " << PROGRAM_NAME << " [OPTION]\n\n"
+{   std::cout << "Usage: " << PROGRAM_NAME << " [OPTION]\n\n"
               << "Write random numbers to standard output.\n\n"
               << "Options:\n"
               << "  -N count           the count of random numbers (default=1)\n"
@@ -99,13 +147,10 @@ void print_help()
 }
 
 std::string process_escape_sequences(const std::string& str)
-{
-    std::string result;
+{   std::string result;
     for (size_t i = 0; i < str.length(); ++i)
-    {
-        if (str[i] == '\\' && i + 1 < str.length())
-        {
-            switch (str[i + 1])
+    {   if (str[i] == '\\' && i + 1 < str.length())
+        {   switch (str[i + 1])
             {
                 case 'n': result += '\n'; ++i; break;
                 case 't': result += '\t'; ++i; break;
@@ -115,16 +160,13 @@ std::string process_escape_sequences(const std::string& str)
             }
         }
         else
-        {
             result += str[i];
-        }
     }
     return result;
 }
 
 int main(int argc, char* argv[])
-{
-    // Default parameters
+{   // Default parameters
     size_t count = 1;
     int min_value = 0;
     int max_value = 32576;
@@ -136,8 +178,8 @@ int main(int argc, char* argv[])
     std::string eof_string = "\n";
     std::string bof_string = "";
 
-    std::ios_base::sync_with_stdio(false);  // Disable sync with C stdio
-    std::cin.tie(nullptr);                  // Untie cin from cout
+    std::ios::sync_with_stdio(false);  // Disable sync with C stdio
+    std::cin.tie(nullptr);             // Untie cin from cout
 
     // Parse command line arguments
     for (int i = 1; i < argc; ++i)
@@ -190,7 +232,7 @@ int main(int argc, char* argv[])
 
     // Print beginning of file string
     if (!bof_string.empty())
-        std::cout << bof_string;
+        fwrite(bof_string.data(), 1, bof_string.size(), stdout);
 
     if (generate_float)
     {   // Generate floating point numbers
@@ -215,11 +257,12 @@ int main(int argc, char* argv[])
         thrust::host_vector<no_init<float>> numbers(count);
         thrust::copy(d_numbers.begin(), d_numbers.end(), numbers.begin());
 #endif
-        std::cout << std::fixed << std::setprecision(precision);
-        for (size_t i = 0; i < count; ++i)
-        {   if (i > 0) std::cout << delimiter;
-            std::cout << numbers[i];
-        }
+        fast_print<float>
+        (   reinterpret_cast<const float*>(numbers.data())
+        ,   count
+        ,   delimiter
+        ,   precision
+        );
     }
     else if (unique)
     {   // Generate unique integers
@@ -240,10 +283,11 @@ int main(int argc, char* argv[])
         );
 
         // Take the first 'count' numbers
-        for (size_t i = 0; i < count; ++i)
-        {   if (i > 0) std::cout << delimiter;
-            std::cout << all_numbers[i];
-        }
+        fast_print<int>
+        (   reinterpret_cast<const int*>(all_numbers.data())
+        ,   count
+        ,   delimiter
+        );
     }
     else
     {   // Generate regular integers
@@ -267,14 +311,15 @@ int main(int argc, char* argv[])
         thrust::host_vector<no_init<int>> numbers(count);
         thrust::copy(d_numbers.begin(), d_numbers.end(), numbers.begin());
 #endif
-        for (size_t i = 0; i < count; ++i)
-        {   if (i > 0) std::cout << delimiter;
-            std::cout << numbers[i];
-        }
+        fast_print<int>
+        (   reinterpret_cast<const int*>(numbers.data())
+        ,   count
+        ,   delimiter
+        );
     }
 
     // Print end of file string
-    std::cout << eof_string;
+    fwrite(eof_string.data(), 1, eof_string.size(), stdout);
 
     return 0;
 }
