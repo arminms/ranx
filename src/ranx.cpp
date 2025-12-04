@@ -37,6 +37,7 @@
     #include <thrust/universal_vector.h>
     #include <thrust/device_vector.h>
     #include <thrust/host_vector.h>
+    #include <thrust/system/cuda/experimental/pinned_allocator.h>
 #endif
 
 #include <fmt/core.h> 
@@ -44,9 +45,10 @@
 
 #include <ranx/random>
 
+
 const std::string VERSION = "1.0.0";
 const std::string PROGRAM_NAME = "ranx";
-const int BUFFER_SIZE = 65536;
+const size_t BUFFER_SIZE = 65536;
 
 template<typename T>
 class no_init
@@ -67,18 +69,28 @@ public:
     T v_;
 };
 
+#if defined(__CUDACC__) || defined(__HIP_PLATFORM_AMD__)
+    template<typename T>
+    using pinned_vector = thrust::host_vector<no_init<T>, thrust::system::cuda::experimental::pinned_allocator<no_init<T>>>;
+    const size_t CHUNK_SIZE = 100'000; // Batch size
+#endif
+
 template<typename T>
 void fast_print
 (   const T* data
 ,   size_t count
 ,   const std::string& delimiter
+,   size_t precision = 0
 )
 {   fmt::memory_buffer buffer;
     buffer.reserve(BUFFER_SIZE);
     for (size_t i = 0; i < count; ++i)
     {   if (i > 0)
             fmt::format_to(std::back_inserter(buffer), "{}", delimiter);
-        fmt::format_to(std::back_inserter(buffer), "{}", static_cast<T>(data[i]));
+        if (0 == precision)
+            fmt::format_to(std::back_inserter(buffer), "{}", static_cast<T>(data[i]));
+        else
+            fmt::format_to(std::back_inserter(buffer), "{:.{}f}", static_cast<T>(data[i]), precision);
         // flush when large
         if (buffer.size() > BUFFER_SIZE)
         {   fwrite(buffer.data(), 1, buffer.size(), stdout);
@@ -90,29 +102,66 @@ void fast_print
         fwrite(buffer.data(), 1, buffer.size(), stdout);
 }
 
+#if defined(__CUDACC__) || defined(__HIP_PLATFORM_AMD__)
 template<typename T>
-void fast_print
-(   const T* data
+void async_pipeline_print
+(   const thrust::device_vector<no_init<T>>& numbers
 ,   size_t count
 ,   const std::string& delimiter
-,   int precision
+,   size_t precision = 0
 )
-{   fmt::memory_buffer buffer;
-    buffer.reserve(BUFFER_SIZE);
-    for (size_t i = 0; i < count; ++i)
-    {   if (i > 0)
-            fmt::format_to(std::back_inserter(buffer), "{}", delimiter);
-        fmt::format_to(std::back_inserter(buffer), "{:.{}f}", static_cast<T>(data[i]), precision);
-        // flush when large
-        if (buffer.size() > BUFFER_SIZE)
-        {   fwrite(buffer.data(), 1, buffer.size(), stdout);
-            buffer.clear();
+{   // 1. Create Two Pinned Host Vectors (Buffers A and B)
+    // We reserve memory immediately so we don't reallocate inside the loop
+    pinned_vector<T> h_buffer_a(CHUNK_SIZE);
+    pinned_vector<T> h_buffer_b(CHUNK_SIZE);
+
+    // 2. Create CUDA Streams
+    cudaStream_t stream_a, stream_b;
+    cudaStreamCreate(&stream_a);
+    cudaStreamCreate(&stream_b);
+
+    // Get raw pointers for the Async Copy
+    auto d_ptr = thrust::raw_pointer_cast(numbers.data());
+    auto h_ptr_a = thrust::raw_pointer_cast(h_buffer_a.data());
+    auto h_ptr_b = thrust::raw_pointer_cast(h_buffer_b.data());
+
+    // 3. The Pipelined Loop
+    for (size_t offset = 0; offset < count; offset += CHUNK_SIZE * 2)
+    {   size_t size_a = std::min(CHUNK_SIZE, count - offset);
+        size_t size_b = std::min(CHUNK_SIZE, count - (offset + CHUNK_SIZE));
+
+        // --- BATCH A ---
+        // Async Copy: GPU -> Pinned Host Buffer A
+        cudaMemcpyAsync(h_ptr_a, d_ptr + offset, 
+                        size_a * sizeof(T), 
+                        cudaMemcpyDeviceToHost, stream_a);
+
+        // --- BATCH B ---
+        if (size_b > 0) {
+            // Async Copy: GPU -> Pinned Host Buffer B
+            cudaMemcpyAsync(h_ptr_b, d_ptr + offset + CHUNK_SIZE, 
+                            size_b * sizeof(T), 
+                            cudaMemcpyDeviceToHost, stream_b);
+        }
+
+        // --- CPU WORK A ---
+        // Wait for Stream A to complete safely
+        cudaStreamSynchronize(stream_a);
+        // While CPU prints A, Stream B is (hopefully) still copying in the background
+        fast_print(reinterpret_cast<const T*>(h_ptr_a), size_a, delimiter, precision);
+
+        // --- CPU WORK B ---
+        if (size_b > 0)
+        {   cudaStreamSynchronize(stream_b);
+            fast_print(reinterpret_cast<const T*>(h_ptr_b), size_b, delimiter, precision);
         }
     }
-    // final flush
-    if (buffer.size() > 0)
-        fwrite(buffer.data(), 1, buffer.size(), stdout);
+
+    // Cleanup
+    cudaStreamDestroy(stream_a);
+    cudaStreamDestroy(stream_b);
 }
+#endif
 
 void print_version()
 {   std::cout << PROGRAM_NAME << " version " << VERSION << "\n"
@@ -172,7 +221,7 @@ int main(int argc, char* argv[])
     int max_value = 32576;
     bool unique = false;
     bool generate_float = false;
-    int precision = 6;
+    size_t precision = 6;
     unsigned long seed = std::chrono::system_clock::now().time_since_epoch().count();
     std::string delimiter = " ";
     std::string eof_string = "\n";
@@ -205,7 +254,7 @@ int main(int argc, char* argv[])
         else if (arg == "-f")
             generate_float = true;
         else if (arg == "-p" && i + 1 < argc)
-        {   precision = std::stoi(argv[++i]);
+        {   precision = std::stoul(argv[++i]);
             generate_float = true;
         }
         else if (arg == "-s" && i + 1 < argc)
@@ -254,15 +303,31 @@ int main(int argc, char* argv[])
         ,   ranx::bind(trng::uniform01_dist<float>(), pcg32(seed))
         );
 #if defined(__CUDACC__) || defined(__HIP_PLATFORM_AMD__)
-        thrust::host_vector<no_init<float>> numbers(count);
-        thrust::copy(d_numbers.begin(), d_numbers.end(), numbers.begin());
-#endif
+        if (count >= 2 * CHUNK_SIZE)
+            async_pipeline_print
+            (   d_numbers
+            ,   count
+            ,   delimiter
+            ,   precision
+            );
+        else
+        {   thrust::host_vector<no_init<float>> numbers(count);
+            thrust::copy(d_numbers.begin(), d_numbers.end(), numbers.begin());
+            fast_print<float>
+            (   reinterpret_cast<const float*>(numbers.data())
+            ,   count
+            ,   delimiter
+            ,   precision
+            );
+        }
+#else
         fast_print<float>
         (   reinterpret_cast<const float*>(numbers.data())
         ,   count
         ,   delimiter
         ,   precision
         );
+#endif
     }
     else if (unique)
     {   // Generate unique integers
@@ -308,14 +373,28 @@ int main(int argc, char* argv[])
         ,   ranx::bind(trng::uniform_int_dist(min_value, max_value), pcg32(seed))
         );
 #if defined(__CUDACC__) || defined(__HIP_PLATFORM_AMD__)
-        thrust::host_vector<no_init<int>> numbers(count);
-        thrust::copy(d_numbers.begin(), d_numbers.end(), numbers.begin());
-#endif
+        if (count >= 2 * CHUNK_SIZE)
+            async_pipeline_print
+            (   d_numbers
+            ,   count
+            ,   delimiter
+            );
+        else
+        {   thrust::host_vector<no_init<int>> numbers(count);
+            thrust::copy(d_numbers.begin(), d_numbers.end(), numbers.begin());
+            fast_print<int>
+            (   reinterpret_cast<const int*>(numbers.data())
+            ,   count
+            ,   delimiter
+            );
+        }
+#else
         fast_print<int>
         (   reinterpret_cast<const int*>(numbers.data())
         ,   count
         ,   delimiter
         );
+#endif
     }
 
     // Print end of file string
