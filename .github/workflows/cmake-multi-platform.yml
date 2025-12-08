@@ -33,8 +33,13 @@ jobs:
         CXX=$(brew --prefix llvm)/bin/clang++ cmake -B ${{github.workspace}}/build
       if: matrix.os == 'macos-latest'
 
-    - name: Build
+    - name: Build (Linux/macOS)
       run: cmake --build ${{github.workspace}}/build -j
+      if: matrix.os == 'macos-latest' || matrix.os == 'ubuntu-latest'
+
+    - name: Build (Windows)
+      run: cmake --build ${{github.workspace}}/build --config Release
+      if: matrix.os == 'windows-latest'
 
     - name: Test
       working-directory: ${{github.workspace}}/build
