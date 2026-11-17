@@ -1,0 +1,76 @@
+name: GPU Simulator
+
+# Optional, non-required check. The hosted runners have no GPU, so this builds
+# the CUDA unit tests and runs them on a simulated NVIDIA H100
+# (https://github.com/pantheongpu/pantheonsim). A simulator has no timing
+# model and cannot reproduce hardware-specific behavior, so it complements
+# real-GPU testing and does not replace it.
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "include/**"
+      - "test/**"
+      - "CMakeLists.txt"
+      - ".github/workflows/gpu-sim.yml"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  tests:
+    name: Unit tests (CUDA 13.0 and simulated H100)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+
+      - name: Set up the simulated GPU and CUDA toolkit
+        uses: pantheongpu/setup-pantheonsim@deff5781e8adfd83dec98dd5242dcbc96a564773 # v0.1.10
+        with:
+          gpu: nvidia/h100
+          cuda-toolkit: "13.0"
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends ninja-build
+
+      # 90-virtual embeds PTX only, which the simulator runs. The simulator
+      # needs a shared CUDA runtime. Catch2 is fetched by the project's CMake.
+      - name: Configure
+        run: |
+          cmake -S . -B build -G Ninja \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DRANX_TARGET_API=cuda \
+            -DRANX_ENABLE_BENCHMARKS=OFF \
+            -DRANX_BUILD_UTILITY=OFF \
+            -DCMAKE_CUDA_ARCHITECTURES=90-virtual \
+            -DCMAKE_CUDA_RUNTIME_LIBRARY=Shared
+
+      - name: Build
+        run: vgpu run --preload cmake --build build -j3 --target unit_tests
+
+      # Fails unless Catch2 reports that everything passed, the tests saw the
+      # simulated device, and nothing was skipped or hit a simulator error.
+      - name: Test
+        shell: bash
+        run: |
+          set -o pipefail
+          vgpu run build/test/unit_tests | tee unit_tests.log
+          grep -q "All tests passed" unit_tests.log
+          grep -q "Running on: NVIDIA" unit_tests.log
+          if grep -Eqi "VirtualGPU error|no (cuda-capable )?device|skipped" unit_tests.log; then
+            echo "::error::simulator error, missing device or skipped test"
+            exit 1
+          fi
+          vgpu run ctest --test-dir build --output-on-failure --no-tests=error | tee ctest.log
+          grep -q "100% tests passed, 0 tests failed" ctest.log
